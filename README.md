@@ -555,9 +555,9 @@ Você é livre para:
 **Luiz Fernando**
 
 - GitHub: [@Luiz-9858](https://github.com/Luiz-9858)
-- LinkedIn: [Seu Perfil](www.linkedin.com/in/luiz-fernando-9747922b7)
+- LinkedIn: [Luiz-fernando](www.linkedin.com/in/luiz-fernando-9747922b7)
 - Portfolio: [kpi-dashboard-full-stack.vercel.app](https://kpi-dashboard-full-stack.vercel.app)
-- Email: seu@email.com
+- Email: luizfernandodev16@gmail.com
 
 ---
 
