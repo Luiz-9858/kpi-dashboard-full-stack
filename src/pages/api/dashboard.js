@@ -1,5 +1,6 @@
 // pages/api/dashboard.js
 // API que retorna todos os dados do dashboard com KPIs calculados
+// OTIMIZADO: Usa cache global para reduzir chamadas ao Notion
 
 import {
   getTodayTasks,
@@ -17,6 +18,14 @@ import {
   calculateWeeklyProgress,
 } from "../../lib/kpis";
 
+import cache from "../../lib/cache";
+
+// Chave do cache
+const CACHE_KEY = "dashboard-data";
+
+// TTL (Time To Live) - 5 minutos em milissegundos
+const CACHE_TTL = 5 * 60 * 1000;
+
 export default async function handler(req, res) {
   // Só aceita GET
   if (req.method !== "GET") {
@@ -24,6 +33,28 @@ export default async function handler(req, res) {
   }
 
   try {
+    // ========================================
+    // ETAPA 1: VERIFICAR CACHE
+    // ========================================
+    const cachedData = cache.get(CACHE_KEY);
+
+    if (cachedData) {
+      console.log("[API] ⚡ Retornando do cache (super rápido!)");
+
+      return res.status(200).json({
+        success: true,
+        data: cachedData,
+        fromCache: true,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // ========================================
+    // ETAPA 2: CACHE VAZIO - BUSCAR DO NOTION
+    // ========================================
+    console.log("[API] 🔍 Cache vazio, buscando do Notion...");
+    const startTime = Date.now();
+
     // Busca todos os dados do Notion em paralelo
     const [
       todayTasks,
@@ -67,30 +98,45 @@ export default async function handler(req, res) {
       streak: kpis.productivity.streak.value,
     };
 
-    // Retorna tudo estruturado
+    // Monta o objeto de resposta
+    const responseData = {
+      // KPIs calculados
+      kpis,
+
+      // Dados brutos
+      todayTasks,
+      hoursWeek,
+      hourTracker: currentWeekTracker,
+      taskPanel,
+      activeProjects,
+      roadmap,
+
+      // Dados processados
+      categoryBreakdown,
+      weeklyProgress,
+      quickStats,
+    };
+
+    // ========================================
+    // ETAPA 3: SALVAR NO CACHE
+    // ========================================
+    cache.set(CACHE_KEY, responseData, CACHE_TTL);
+
+    const elapsedTime = Date.now() - startTime;
+    console.log(
+      `[API] ✅ Dados buscados do Notion em ${elapsedTime}ms e salvos no cache`,
+    );
+
+    // Retorna os dados
     res.status(200).json({
       success: true,
-      data: {
-        // KPIs calculados
-        kpis,
-
-        // Dados brutos
-        todayTasks,
-        hoursWeek,
-        hourTracker: currentWeekTracker,
-        taskPanel,
-        activeProjects,
-        roadmap,
-
-        // Dados processados
-        categoryBreakdown,
-        weeklyProgress,
-        quickStats,
-      },
+      data: responseData,
+      fromCache: false,
+      fetchTime: elapsedTime,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Erro ao buscar dados do dashboard:", error);
+    console.error("[API] ❌ Erro ao buscar dados do dashboard:", error);
 
     res.status(500).json({
       success: false,
