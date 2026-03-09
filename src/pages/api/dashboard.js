@@ -1,6 +1,7 @@
 // pages/api/dashboard.js
 // API que retorna todos os dados do dashboard com KPIs calculados
 // OTIMIZADO: Usa cache global para reduzir chamadas ao Notion
+// ATUALIZADO: Inclui OKRs automáticos do Notion
 
 import {
   getTodayTasks,
@@ -9,6 +10,7 @@ import {
   getTaskPanel,
   getActiveProjects,
   getRoadmap,
+  getOKRsWithKeyResults, // NOVO!
 } from "../../lib/notion";
 
 import {
@@ -25,6 +27,9 @@ const CACHE_KEY = "dashboard-data";
 
 // TTL (Time To Live) - 5 minutos em milissegundos
 const CACHE_TTL = 5 * 60 * 1000;
+
+// Quarter atual (mude aqui quando mudar de quarter!)
+const CURRENT_QUARTER = "Q1 2026";
 
 export default async function handler(req, res) {
   // Só aceita GET
@@ -56,6 +61,7 @@ export default async function handler(req, res) {
     const startTime = Date.now();
 
     // Busca todos os dados do Notion em paralelo
+    // AGORA INCLUI OKRs! 🎉
     const [
       todayTasks,
       hoursWeek,
@@ -63,6 +69,7 @@ export default async function handler(req, res) {
       taskPanel,
       activeProjects,
       roadmap,
+      okrsData, // NOVO!
     ] = await Promise.all([
       getTodayTasks(),
       getHoursThisWeek(),
@@ -70,6 +77,7 @@ export default async function handler(req, res) {
       getTaskPanel(),
       getActiveProjects(),
       getRoadmap(),
+      getOKRsWithKeyResults(CURRENT_QUARTER), // NOVO!
     ]);
 
     // Filtra dados da semana atual
@@ -98,6 +106,41 @@ export default async function handler(req, res) {
       streak: kpis.productivity.streak.value,
     };
 
+    // ========================================
+    // NOVO: PROCESSAR OKRs
+    // ========================================
+
+    // Calcula estatísticas gerais dos OKRs
+    const totalOKRs = okrsData.length;
+    const totalKRs = okrsData.reduce((sum, okr) => sum + okr.totalKRs, 0);
+    const avgProgress =
+      okrsData.length > 0
+        ? Math.round(
+            okrsData.reduce((sum, okr) => sum + okr.progress, 0) /
+              okrsData.length,
+          )
+        : 0;
+
+    // Conta KRs por status
+    const allKRs = okrsData.flatMap((okr) => okr.keyResults);
+    const completedKRs = allKRs.filter(
+      (kr) => kr.status === "Concluído",
+    ).length;
+    const inProgressKRs = allKRs.filter(
+      (kr) => kr.status === "Em Andamento",
+    ).length;
+    const delayedKRs = allKRs.filter((kr) => kr.status === "Atrasado").length;
+
+    const okrsSummary = {
+      totalOKRs,
+      totalKRs,
+      avgProgress,
+      completedKRs,
+      inProgressKRs,
+      delayedKRs,
+      quarter: CURRENT_QUARTER,
+    };
+
     // Monta o objeto de resposta
     const responseData = {
       // KPIs calculados
@@ -110,6 +153,10 @@ export default async function handler(req, res) {
       taskPanel,
       activeProjects,
       roadmap,
+
+      // NOVO: OKRs
+      okrs: okrsData,
+      okrsSummary,
 
       // Dados processados
       categoryBreakdown,
