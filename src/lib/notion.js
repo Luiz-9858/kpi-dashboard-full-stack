@@ -1,5 +1,6 @@
 // lib/notion.js
 // Serviço de conexão e consulta ao Notion
+// ATUALIZADO: Incluindo funções para OKRs e Key Results
 
 import { Client } from "@notionhq/client";
 
@@ -16,6 +17,9 @@ const DATABASE_IDS = {
   taskPanel: process.env.NOTION_DB_TASK_PANEL,
   activeProjects: process.env.NOTION_DB_ACTIVE_PROJECTS,
   roadmap: process.env.NOTION_DB_ROADMAP,
+  // NOVOS: OKRs
+  okrs: process.env.NOTION_DB_OKRS,
+  keyResults: process.env.NOTION_DB_KEY_RESULTS,
 };
 
 /**
@@ -34,6 +38,10 @@ export async function queryDatabase(databaseId, filter = {}, sorts = []) {
     throw error;
   }
 }
+
+// ========================================
+// DATABASES ORIGINAIS (6)
+// ========================================
 
 /**
  * Busca tarefas de hoje (Today's Tasks)
@@ -172,6 +180,96 @@ export async function getRoadmap() {
     priority: page.properties.Prioridade?.select?.name || "Sem prioridade",
     description: page.properties["Descrição"]?.rich_text[0]?.plain_text || "",
   }));
+}
+
+// ========================================
+// NOVAS FUNÇÕES: OKRs (2 databases)
+// ========================================
+
+/**
+ * Busca OKRs (Objetivos)
+ * @param {string} quarter - Quarter para filtrar (ex: 'Q1 2026')
+ */
+export async function getOKRs(quarter = "Q1 2026") {
+  const results = await queryDatabase(DATABASE_IDS.okrs, {
+    property: "Quarter",
+    select: {
+      equals: quarter,
+    },
+  });
+
+  return results.map((page) => ({
+    id: page.id,
+    objective:
+      page.properties.Objective?.title[0]?.plain_text || "Sem objetivo",
+    icon: page.properties.Icon?.rich_text[0]?.plain_text || "📊",
+    quarter: page.properties.Quarter?.select?.name || quarter,
+    category: page.properties.Category?.select?.name || "Sem categoria",
+    status: page.properties.Status?.select?.name || "Em Andamento",
+    description: page.properties.Description?.rich_text[0]?.plain_text || "",
+  }));
+}
+
+/**
+ * Busca Key Results
+ * @param {string} quarter - Quarter para filtrar (ex: 'Q1 2026')
+ */
+export async function getKeyResults(quarter = "Q1 2026") {
+  const results = await queryDatabase(DATABASE_IDS.keyResults, {
+    property: "Quarter",
+    select: {
+      equals: quarter,
+    },
+  });
+
+  return results.map((page) => {
+    // Pega a relação com OKR
+    const okrRelation = page.properties.OKR?.relation || [];
+    const okrId = okrRelation[0]?.id || null;
+
+    return {
+      id: page.id,
+      keyResult:
+        page.properties["Key Result"]?.title[0]?.plain_text || "Sem KR",
+      okrId, // ID do OKR relacionado
+      progress: page.properties.Progress?.number || 0,
+      target: page.properties.Target?.rich_text[0]?.plain_text || "100%",
+      status: page.properties.Status?.select?.name || "Em Andamento",
+      quarter: page.properties.Quarter?.select?.name || quarter,
+    };
+  });
+}
+
+/**
+ * Busca OKRs completos com seus Key Results
+ * @param {string} quarter - Quarter para filtrar
+ */
+export async function getOKRsWithKeyResults(quarter = "Q1 2026") {
+  // Busca OKRs e KRs em paralelo
+  const [okrs, keyResults] = await Promise.all([
+    getOKRs(quarter),
+    getKeyResults(quarter),
+  ]);
+
+  // Agrupa KRs por OKR e calcula progresso médio
+  const okrsWithKRs = okrs.map((okr) => {
+    // Filtra os KRs que pertencem a este OKR
+    const krs = keyResults.filter((kr) => kr.okrId === okr.id);
+
+    // Calcula progresso médio do OKR (média dos KRs)
+    const totalProgress = krs.reduce((sum, kr) => sum + (kr.progress || 0), 0);
+    const avgProgress =
+      krs.length > 0 ? Math.round(totalProgress / krs.length) : 0;
+
+    return {
+      ...okr,
+      keyResults: krs,
+      progress: avgProgress, // Progresso calculado automaticamente!
+      totalKRs: krs.length,
+    };
+  });
+
+  return okrsWithKRs;
 }
 
 export default notion;
