@@ -1,9 +1,11 @@
 // pages/okrs.js
 // Página de OKRs (Objectives and Key Results) Q1 2026
+// ATUALIZADO: Busca OKRs automaticamente do Notion
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import Header from "@/components/Header";
+import { SkeletonCard, ErrorState } from "@/components/Loading";
 import {
   Target,
   TrendingUp,
@@ -12,45 +14,48 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { OKRS_Q1_2026 } from "@/lib/constants";
 
 export default function OKRsPage() {
+  const [okrsData, setOkrsData] = useState([]);
+  const [okrsSummary, setOkrsSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [expandedOKR, setExpandedOKR] = useState(0); // Primeiro OKR expandido por padrão
 
-  // Calcula progresso geral de todos os OKRs
-  const calculateOverallProgress = () => {
-    const totalKRs = OKRS_Q1_2026.reduce(
-      (sum, okr) => sum + okr.keyResults.length,
-      0,
-    );
-    const totalProgress = OKRS_Q1_2026.reduce(
-      (sum, okr) =>
-        sum + okr.keyResults.reduce((s, kr) => s + (kr.progress || 0), 0),
-      0,
-    );
-    return totalKRs > 0 ? Math.round(totalProgress / totalKRs) : 0;
-  };
+  // Busca OKRs da API
+  useEffect(() => {
+    fetchOKRs();
+  }, []);
 
-  const overallProgress = calculateOverallProgress();
+  async function fetchOKRs() {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/dashboard");
 
-  // Calcula estatísticas
-  const totalOKRs = OKRS_Q1_2026.length;
-  const totalKRs = OKRS_Q1_2026.reduce(
-    (sum, okr) => sum + okr.keyResults.length,
-    0,
-  );
-  const completedKRs = OKRS_Q1_2026.reduce(
-    (sum, okr) =>
-      sum + okr.keyResults.filter((kr) => kr.progress >= 100).length,
-    0,
-  );
-  const inProgressKRs = OKRS_Q1_2026.reduce(
-    (sum, okr) =>
-      sum +
-      okr.keyResults.filter((kr) => kr.progress > 0 && kr.progress < 100)
-        .length,
-    0,
-  );
+      if (!response.ok) throw new Error("Erro ao buscar OKRs");
+
+      const result = await response.json();
+
+      // Extrai OKRs e summary da resposta
+      setOkrsData(result.data?.okrs || []);
+      setOkrsSummary(result.data?.okrsSummary || null);
+      setError(null);
+    } catch (err) {
+      console.error("Erro:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Usa os dados do summary se disponível, senão calcula localmente
+  const totalOKRs = okrsSummary?.totalOKRs || okrsData.length;
+  const totalKRs =
+    okrsSummary?.totalKRs ||
+    okrsData.reduce((sum, okr) => sum + okr.totalKRs, 0);
+  const overallProgress = okrsSummary?.avgProgress || 0;
+  const completedKRs = okrsSummary?.completedKRs || 0;
+  const inProgressKRs = okrsSummary?.inProgressKRs || 0;
 
   return (
     <>
@@ -82,106 +87,146 @@ export default function OKRsPage() {
               </div>
             </div>
 
+            {/* Loading */}
+            {loading && (
+              <div className="space-y-4">
+                <SkeletonCard />
+                <SkeletonCard />
+              </div>
+            )}
+
+            {/* Error */}
+            {error && !loading && (
+              <ErrorState error={error} onRetry={fetchOKRs} />
+            )}
+
             {/* Progresso Geral */}
-            <div className="card mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                  Progresso Geral
-                </h2>
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                  {overallProgress}%
-                </span>
+            {!loading && !error && (
+              <div className="card mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                    Progresso Geral
+                  </h2>
+                  <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    {overallProgress}%
+                  </span>
+                </div>
+                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 mb-4">
+                  <div
+                    className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${overallProgress}%` }}
+                  />
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                      {totalOKRs}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      OKRs
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                      {totalKRs}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      Key Results
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                      {completedKRs}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      Concluídos
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                      {inProgressKRs}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      Em Progresso
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 mb-4">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${overallProgress}%` }}
-                />
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {totalOKRs}
-                  </p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    OKRs
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {totalKRs}
-                  </p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Key Results
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {completedKRs}
-                  </p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Concluídos
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {inProgressKRs}
-                  </p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Em Progresso
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Lista de OKRs */}
-          <div className="space-y-4">
-            {OKRS_Q1_2026.map((okr, index) => (
-              <OKRCard
-                key={index}
-                okr={okr}
-                index={index}
-                isExpanded={expandedOKR === index}
-                onToggle={() =>
-                  setExpandedOKR(expandedOKR === index ? -1 : index)
-                }
-              />
-            ))}
-          </div>
+          {!loading && !error && okrsData.length > 0 && (
+            <div className="space-y-4">
+              {okrsData.map((okr, index) => (
+                <OKRCard
+                  key={okr.id || index}
+                  okr={okr}
+                  index={index}
+                  isExpanded={expandedOKR === index}
+                  onToggle={() =>
+                    setExpandedOKR(expandedOKR === index ? -1 : index)
+                  }
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Mensagem se não houver OKRs */}
+          {!loading && !error && okrsData.length === 0 && (
+            <div className="card text-center py-12">
+              <Target className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                Nenhum OKR encontrado
+              </h3>
+              <p className="text-slate-600 dark:text-slate-400">
+                Configure seus OKRs no Notion para vê-los aqui!
+              </p>
+            </div>
+          )}
 
           {/* Timeline */}
-          <div className="card mt-8">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-              📅 Timeline Q1 2026
-            </h2>
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="text-slate-600 dark:text-slate-400">
-                  Início:
-                </span>
-                <span className="font-medium text-slate-900 dark:text-white">
-                  Janeiro 2026
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-slate-600 dark:text-slate-400">
-                  Término:
-                </span>
-                <span className="font-medium text-slate-900 dark:text-white">
-                  Março 2026
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-slate-600 dark:text-slate-400">
-                  Revisão:
-                </span>
-                <span className="font-medium text-slate-900 dark:text-white">
-                  Semanal (Domingos)
-                </span>
+          {!loading && !error && okrsData.length > 0 && (
+            <div className="card mt-8">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                📅 Timeline {okrsSummary?.quarter || "Q1 2026"}
+              </h2>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Início:
+                  </span>
+                  <span className="font-medium text-slate-900 dark:text-white">
+                    Janeiro 2026
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Término:
+                  </span>
+                  <span className="font-medium text-slate-900 dark:text-white">
+                    Março 2026
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Revisão:
+                  </span>
+                  <span className="font-medium text-slate-900 dark:text-white">
+                    Semanal (Domingos)
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-600 dark:text-slate-400">
+                    Atualização:
+                  </span>
+                  <span className="font-medium text-blue-600 dark:text-blue-400">
+                    Automática do Notion ✨
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </main>
       </div>
     </>
@@ -190,11 +235,8 @@ export default function OKRsPage() {
 
 // Componente de Card de OKR
 function OKRCard({ okr, index, isExpanded, onToggle }) {
-  // Calcula progresso do OKR
-  const okrProgress = Math.round(
-    okr.keyResults.reduce((sum, kr) => sum + kr.progress, 0) /
-      okr.keyResults.length,
-  );
+  // Usa o progresso já calculado pela API
+  const okrProgress = okr.progress || 0;
 
   // Cores por categoria
   const categoryColors = {
@@ -216,7 +258,7 @@ function OKRCard({ okr, index, isExpanded, onToggle }) {
           <div
             className={`w-12 h-12 bg-gradient-to-br ${bgGradient} rounded-lg flex items-center justify-center flex-shrink-0`}
           >
-            <span className="text-2xl">{okr.icon}</span>
+            <span className="text-2xl">{okr.icon || "📊"}</span>
           </div>
 
           {/* Conteúdo */}
@@ -227,7 +269,7 @@ function OKRCard({ okr, index, isExpanded, onToggle }) {
                   OKR {index + 1}: {okr.objective}
                 </h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  {okr.category} • {okr.keyResults.length} Key Results
+                  {okr.category} • {okr.keyResults?.length || 0} Key Results
                 </p>
               </div>
               {isExpanded ? (
@@ -254,10 +296,10 @@ function OKRCard({ okr, index, isExpanded, onToggle }) {
       </button>
 
       {/* Key Results (expansível) */}
-      {isExpanded && (
+      {isExpanded && okr.keyResults && okr.keyResults.length > 0 && (
         <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700 space-y-3">
           {okr.keyResults.map((kr, krIndex) => (
-            <KeyResultItem key={krIndex} kr={kr} />
+            <KeyResultItem key={kr.id || krIndex} kr={kr} />
           ))}
         </div>
       )}
@@ -294,7 +336,7 @@ function KeyResultItem({ kr }) {
               : "text-slate-900 dark:text-white"
           }`}
         >
-          {kr.description}
+          {kr.keyResult}
         </p>
 
         {/* Barra de progresso */}
