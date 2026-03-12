@@ -191,12 +191,18 @@ export async function getRoadmap() {
  * @param {string} quarter - Quarter para filtrar (ex: 'Q1 2026')
  */
 export async function getOKRs(quarter = "Q1 2026") {
-  const results = await queryDatabase(DATABASE_IDS.okrs, {
-    property: "Quarter",
-    select: {
-      equals: quarter,
-    },
-  });
+  // TEMPORÁRIO: SEM FILTRO PARA DEBUG
+  const results = await queryDatabase(DATABASE_IDS.okrs);
+
+  console.log("[getOKRs] Total encontrado:", results.length);
+
+  // ADICIONE ISSO TEMPORARIAMENTE:
+  if (results.length > 0) {
+    console.log(
+      "[DEBUG] Propriedades do primeiro KR:",
+      Object.keys(results[0].properties),
+    );
+  }
 
   return results.map((page) => ({
     id: page.id,
@@ -215,17 +221,22 @@ export async function getOKRs(quarter = "Q1 2026") {
  * @param {string} quarter - Quarter para filtrar (ex: 'Q1 2026')
  */
 export async function getKeyResults(quarter = "Q1 2026") {
-  const results = await queryDatabase(DATABASE_IDS.keyResults, {
-    property: "Quarter",
-    select: {
-      equals: quarter,
-    },
-  });
+  // TEMPORÁRIO: SEM FILTRO PARA DEBUG
+  const results = await queryDatabase(DATABASE_IDS.keyResults);
+
+  console.log("[getKeyResults] Total encontrado:", results.length);
 
   return results.map((page) => {
     // Pega a relação com OKR
     const okrRelation = page.properties.OKR?.relation || [];
     const okrId = okrRelation[0]?.id || null;
+
+    console.log(
+      "[getKeyResults] KR:",
+      page.properties["Key Result"]?.title[0]?.plain_text,
+      "-> OKR ID:",
+      okrId,
+    );
 
     return {
       id: page.id,
