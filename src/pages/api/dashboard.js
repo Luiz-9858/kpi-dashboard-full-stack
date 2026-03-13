@@ -2,6 +2,7 @@
 // API que retorna todos os dados do dashboard com KPIs calculados
 // OTIMIZADO: Usa cache global para reduzir chamadas ao Notion
 // ATUALIZADO: Inclui OKRs automáticos do Notion
+// CORRIGIDO: Contadores baseados em Progress, não em Status
 
 import {
   getTodayTasks,
@@ -29,7 +30,7 @@ const CACHE_KEY = "dashboard-data";
 const CACHE_TTL = 5 * 60 * 1000;
 
 // Quarter atual (mude aqui quando mudar de quarter!)
-const CURRENT_QUARTER = "Q1 2026";
+const CURRENT_QUARTER = "Q1";
 
 export default async function handler(req, res) {
   // Só aceita GET
@@ -108,6 +109,7 @@ export default async function handler(req, res) {
 
     // ========================================
     // NOVO: PROCESSAR OKRs
+    // CORRIGIDO: Contadores baseados em Progress!
     // ========================================
 
     // Calcula estatísticas gerais dos OKRs
@@ -121,15 +123,15 @@ export default async function handler(req, res) {
           )
         : 0;
 
-    // Conta KRs por status
+    // Conta KRs por PROGRESS (não por status!)
     const allKRs = okrsData.flatMap((okr) => okr.keyResults);
-    const completedKRs = allKRs.filter(
-      (kr) => kr.status === "Concluído",
-    ).length;
+
+    // CORRIGIDO: Baseado em Progress
+    const completedKRs = allKRs.filter((kr) => kr.progress >= 100).length;
     const inProgressKRs = allKRs.filter(
-      (kr) => kr.status === "Em Andamento",
+      (kr) => kr.progress > 0 && kr.progress < 100,
     ).length;
-    const delayedKRs = allKRs.filter((kr) => kr.status === "Atrasado").length;
+    const notStartedKRs = allKRs.filter((kr) => kr.progress === 0).length;
 
     const okrsSummary = {
       totalOKRs,
@@ -137,7 +139,7 @@ export default async function handler(req, res) {
       avgProgress,
       completedKRs,
       inProgressKRs,
-      delayedKRs,
+      notStartedKRs, // NOVO: Não iniciados
       quarter: CURRENT_QUARTER,
     };
 
