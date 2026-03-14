@@ -1,5 +1,6 @@
 // pages/index.js
 // Página principal do dashboard
+// OTIMIZADO PARA MOBILE - Responsividade completa
 
 import { useState, useEffect } from "react";
 import Head from "next/head";
@@ -65,11 +66,11 @@ export default function Dashboard() {
         </Head>
         <Header />
         <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             <div className="flex items-center justify-center min-h-[60vh]">
               <div className="text-center">
                 <div className="spinner mx-auto mb-4" />
-                <p className="text-slate-600 dark:text-slate-400">
+                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
                   Carregando seus dados...
                 </p>
               </div>
@@ -89,13 +90,15 @@ export default function Dashboard() {
         </Head>
         <Header />
         <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             <div className="card max-w-2xl mx-auto text-center">
-              <div className="text-red-500 text-5xl mb-4">⚠️</div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+              <div className="text-4xl sm:text-5xl mb-4">⚠️</div>
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2">
                 Erro ao carregar dados
               </h2>
-              <p className="text-slate-600 dark:text-slate-400 mb-4">{error}</p>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mb-4">
+                {error}
+              </p>
               <button onClick={fetchDashboardData} className="btn-primary">
                 Tentar novamente
               </button>
@@ -206,56 +209,68 @@ export default function Dashboard() {
           name="description"
           content="Acompanhe seu progresso como desenvolvedor Full Stack"
         />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </Head>
 
       <Header />
 
       <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-          {/* Cabeçalho */}
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
+          {/* Cabeçalho - RESPONSIVE */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
                 Bem-vindo de volta! 👋
               </h1>
-              <p className="text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">
                 Aqui está seu progresso esta semana
               </p>
             </div>
             <button
               onClick={fetchDashboardData}
-              className="btn-ghost flex items-center gap-2"
+              className="btn-ghost flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto"
               title="Atualizar dados"
             >
               <Zap className="w-4 h-4" />
-              <span className="hidden sm:inline">Atualizar</span>
+              <span>Atualizar</span>
             </button>
           </div>
 
-          {/* Stats Cards */}
+          {/* Stats Cards - RESPONSIVE */}
           <section>
-            <StatsGrid stats={statsData} />
+            {/* Grid 1 coluna em mobile, 2 em tablet, 4 em desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {statsData.map((stat, index) => (
+                <StatsCard key={index} stat={stat} />
+              ))}
+            </div>
           </section>
 
-          {/* KPIs Principais */}
+          {/* KPIs Principais - RESPONSIVE */}
           <section>
-            <div className="section-header">
-              <h2 className="section-title">KPIs Principais</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+                KPIs Principais
+              </h2>
               <a
                 href="/kpis"
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 Ver todos →
               </a>
             </div>
-            <div className="dashboard-grid">
+            {/* Grid 1 coluna em mobile, 2 em tablet, 3 em desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {kpiCards.map((kpi, index) => (
                 <KPICard key={index} kpi={kpi} />
               ))}
             </div>
           </section>
 
-          {/* Gráficos */}
+          {/* Gráficos - RESPONSIVE */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Distribuição de Horas */}
             <BarChartComponent
@@ -268,19 +283,19 @@ export default function Dashboard() {
               ]}
               colors={["#3b82f6", "#94a3b8"]}
               valueFormatter={(v) => `${v}h`}
-              height={300}
+              height={250} // Reduzido para mobile
             />
 
-            {/* Tasks de Hoje */}
+            {/* Tasks de Hoje - RESPONSIVE */}
             <div className="card">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
                 Tasks de Hoje
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {data.todayTasks.slice(0, 5).map((task, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     <div
                       className={`
@@ -295,22 +310,22 @@ export default function Dashboard() {
                     `}
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                      <div className="text-xs sm:text-sm font-medium text-slate-900 dark:text-white truncate">
                         {task.name}
                       </div>
-                      <div className="text-xs text-slate-600 dark:text-slate-400">
+                      <div className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-400">
                         {task.estimatedTime}h • {task.status}
                       </div>
                     </div>
                     <span
                       className={`
-                      status-badge flex-shrink-0
+                      text-[10px] sm:text-xs px-2 py-1 rounded-full flex-shrink-0 font-medium
                       ${
                         task.status === "Concluído"
-                          ? "status-success"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
                           : task.status === "Fazendo"
-                            ? "status-warning"
-                            : "status-info"
+                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                            : "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
                       }
                     `}
                     >
@@ -320,13 +335,13 @@ export default function Dashboard() {
                 ))}
               </div>
               {data.todayTasks.length === 0 && (
-                <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                <div className="text-center py-8 text-sm sm:text-base text-slate-500 dark:text-slate-400">
                   📋 Nenhuma task para hoje
                 </div>
               )}
               {data.todayTasks.length > 5 && (
                 <div className="text-center mt-4">
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                  <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                     Mostrando 5 de {data.todayTasks.length} tasks
                   </span>
                 </div>
@@ -334,21 +349,21 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Progresso Semanal */}
+          {/* Progresso Semanal - RESPONSIVE */}
           <section className="card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
                 Progresso Semanal
               </h3>
               <span
                 className={`
-                status-badge
+                text-xs sm:text-sm px-3 py-1 rounded-full font-medium self-start sm:self-auto
                 ${
                   data.weeklyProgress.status === "success"
-                    ? "status-success"
+                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
                     : data.weeklyProgress.status === "warning"
-                      ? "status-warning"
-                      : "status-danger"
+                      ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                      : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"
                 }
               `}
               >
@@ -370,7 +385,7 @@ export default function Dashboard() {
                 style={{ width: `${data.weeklyProgress.percentage}%` }}
               />
             </div>
-            <div className="flex justify-between text-sm text-slate-600 dark:text-slate-400">
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               <span>
                 {data.weeklyProgress.real}h de {data.weeklyProgress.planned}h
                 planejadas
