@@ -1,13 +1,17 @@
 // pages/index.js
 // Página principal do dashboard
-// OTIMIZADO PARA MOBILE - Responsividade completa
+// OTIMIZADO PARA MOBILE + GRÁFICO DE PIZZA (CORRIGIDO)
 
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Header from "../components/Header";
 import StatsCard, { StatsGrid } from "../components/StatsCard";
 import KPICard from "../components/KPICard";
-import { LineChartComponent, BarChartComponent } from "../components/Charts";
+import {
+  LineChartComponent,
+  BarChartComponent,
+  PieChartComponent,
+} from "../components/Charts";
 import {
   Clock,
   CheckCircle,
@@ -201,6 +205,12 @@ export default function Dashboard() {
     },
   ];
 
+  // Prepara dados para gráfico de pizza
+  const pieChartData = data.categoryBreakdown.map((cat) => ({
+    name: cat.name,
+    value: cat.real,
+  }));
+
   return (
     <>
       <Head>
@@ -272,9 +282,9 @@ export default function Dashboard() {
 
           {/* Gráficos - RESPONSIVE */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Distribuição de Horas */}
+            {/* Distribuição de Horas (Barras) */}
             <BarChartComponent
-              title="Distribuição de Tempo"
+              title="Horas Plan vs Real"
               data={data.categoryBreakdown}
               xAxisKey="name"
               dataKeys={[
@@ -282,17 +292,42 @@ export default function Dashboard() {
                 { dataKey: "planned", name: "Horas Planejadas" },
               ]}
               colors={["#3b82f6", "#94a3b8"]}
-              valueFormatter={(v) => `${v}h`}
-              height={250} // Reduzido para mobile
+              valueFormatter={(v) => `${Number(v).toFixed(1)}h`}
+              height={250}
             />
 
-            {/* Tasks de Hoje - RESPONSIVE */}
-            <div className="card">
-              <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
-                Tasks de Hoje
-              </h3>
+            {/* Distribuição de Horas (Pizza) - CORRIGIDO SEM LABELS */}
+            <PieChartComponent
+              title="Distribuição de Horas Reais"
+              data={pieChartData}
+              dataKey="value"
+              nameKey="name"
+              colors={["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"]}
+              valueFormatter={(v) => `${Number(v).toFixed(1)}h`}
+              height={250}
+              showLabels={false}
+            />
+          </div>
+
+          {/* Tasks de Hoje - TODAS AS TASKS (SEM LIMITE) */}
+          <section className="card">
+            <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
+              Tasks de Hoje{" "}
+              {data.todayTasks.length > 0 && (
+                <span className="text-sm font-normal text-slate-500 dark:text-slate-400">
+                  ({data.todayTasks.length}{" "}
+                  {data.todayTasks.length === 1 ? "task" : "tasks"})
+                </span>
+              )}
+            </h3>
+
+            {data.todayTasks.length === 0 ? (
+              <div className="text-center py-8 text-sm sm:text-base text-slate-500 dark:text-slate-400">
+                📋 Nenhuma task para hoje
+              </div>
+            ) : (
               <div className="space-y-2 sm:space-y-3">
-                {data.todayTasks.slice(0, 5).map((task, index) => (
+                {data.todayTasks.map((task, index) => (
                   <div
                     key={index}
                     className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -334,20 +369,8 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-              {data.todayTasks.length === 0 && (
-                <div className="text-center py-8 text-sm sm:text-base text-slate-500 dark:text-slate-400">
-                  📋 Nenhuma task para hoje
-                </div>
-              )}
-              {data.todayTasks.length > 5 && (
-                <div className="text-center mt-4">
-                  <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                    Mostrando 5 de {data.todayTasks.length} tasks
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
+            )}
+          </section>
 
           {/* Progresso Semanal - RESPONSIVE */}
           <section className="card">
