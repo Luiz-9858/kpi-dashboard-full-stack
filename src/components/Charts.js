@@ -1,5 +1,6 @@
 // components/Charts.js
 // Componentes de gráficos com Recharts configurados para dark/light mode
+// ATUALIZADO: Suporte a showLabels no PieChart
 
 import {
   LineChart,
@@ -272,7 +273,7 @@ export function AreaChartComponent({
   );
 }
 
-// Gráfico de Pizza
+// Gráfico de Pizza - ATUALIZADO com showLabels
 export function PieChartComponent({
   data,
   dataKey = "value",
@@ -281,6 +282,7 @@ export function PieChartComponent({
   height = 300,
   colors = Object.values(CHART_COLORS),
   valueFormatter = (value) => value,
+  showLabels = true, // ← NOVA PROP
 }) {
   const { isDark } = useTheme();
   const textColor = isDark ? "#94a3b8" : "#64748b";
@@ -301,10 +303,13 @@ export function PieChartComponent({
             cx="50%"
             cy="50%"
             outerRadius={100}
-            label={({ name, percent }) =>
-              `${name}: ${(percent * 100).toFixed(0)}%`
+            label={
+              showLabels
+                ? ({ name, percent }) =>
+                    `${name}: ${(percent * 100).toFixed(0)}%`
+                : false
             }
-            labelLine={false}
+            labelLine={showLabels}
           >
             {data.map((entry, index) => (
               <Cell
