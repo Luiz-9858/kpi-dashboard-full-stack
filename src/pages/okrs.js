@@ -2,11 +2,13 @@
 // Página de OKRs (Objectives and Key Results) Q1 2026
 // ATUALIZADO: Busca OKRs automaticamente do Notion
 // OTIMIZADO PARA MOBILE - Responsividade completa
+// COM CIRCULAR PROGRESS - Visualização avançada
 
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Header from "@/components/Header";
 import { SkeletonCard, ErrorState } from "@/components/Loading";
+import { CircularProgress, ProgressRing } from "@/components/AdvancedCharts";
 import {
   Target,
   TrendingUp,
@@ -105,62 +107,67 @@ export default function OKRsPage() {
               <ErrorState error={error} onRetry={fetchOKRs} />
             )}
 
-            {/* Progresso Geral - RESPONSIVE */}
+            {/* Progresso Geral COM CIRCULAR PROGRESS - RESPONSIVE */}
             {!loading && !error && (
-              <div className="card mb-4 sm:mb-6 p-4 sm:p-5">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                  <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
-                    Progresso Geral
-                  </h2>
-                  <span className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {overallProgress}%
-                  </span>
-                </div>
-                <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 sm:h-3 mb-3 sm:mb-4">
-                  <div
-                    className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 sm:h-3 rounded-full transition-all duration-500"
-                    style={{ width: `${overallProgress}%` }}
-                  />
-                </div>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                  <div className="text-center">
-                    <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                      {totalOKRs}
-                    </p>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                      OKRs
-                    </p>
+              <div className="card mb-4 sm:mb-6 p-4 sm:p-6">
+                <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4 sm:mb-6">
+                  Progresso Geral
+                </h2>
+
+                {/* Grid: CircularProgress + Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* CircularProgress GRANDE */}
+                  <div className="flex items-center justify-center">
+                    <CircularProgress
+                      value={overallProgress}
+                      size={160}
+                      strokeWidth={12}
+                      label="Q1 2026"
+                      showLabel={true}
+                    />
                   </div>
-                  <div className="text-center">
-                    <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                      {totalKRs}
-                    </p>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                      Key Results
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">
-                      {completedKRs}
-                    </p>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                      Concluídos
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
-                      {inProgressKRs}
-                    </p>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                      Em Progresso
-                    </p>
+
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                      <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                        {totalOKRs}
+                      </p>
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+                        OKRs
+                      </p>
+                    </div>
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                      <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                        {totalKRs}
+                      </p>
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+                        Key Results
+                      </p>
+                    </div>
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-green-50 dark:bg-green-900/20">
+                      <p className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">
+                        {completedKRs}
+                      </p>
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+                        Concluídos
+                      </p>
+                    </div>
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                      <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
+                        {inProgressKRs}
+                      </p>
+                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+                        Em Progresso
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Lista de OKRs - RESPONSIVE */}
+          {/* Lista de OKRs COM PROGRESS RING - RESPONSIVE */}
           {!loading && !error && okrsData.length > 0 && (
             <div className="space-y-3 sm:space-y-4">
               {okrsData.map((okr, index) => (
@@ -238,32 +245,44 @@ export default function OKRsPage() {
   );
 }
 
-// Componente de Card de OKR - RESPONSIVE
+// Componente de Card de OKR COM PROGRESS RING - RESPONSIVE
 function OKRCard({ okr, index, isExpanded, onToggle }) {
   // Usa o progresso já calculado pela API
   const okrProgress = okr.progress || 0;
 
   // Cores por categoria
   const categoryColors = {
-    Projeto: "from-purple-500 to-pink-500",
-    Aprendizado: "from-blue-500 to-cyan-500",
-    Carreira: "from-green-500 to-emerald-500",
-    Idioma: "from-orange-500 to-red-500",
+    Projeto: { gradient: "from-purple-500 to-pink-500", solid: "#8b5cf6" },
+    Aprendizado: { gradient: "from-blue-500 to-cyan-500", solid: "#3b82f6" },
+    Carreira: { gradient: "from-green-500 to-emerald-500", solid: "#10b981" },
+    Idioma: { gradient: "from-orange-500 to-red-500", solid: "#f59e0b" },
   };
 
-  const bgGradient =
-    categoryColors[okr.category] || "from-slate-500 to-slate-600";
+  const colors = categoryColors[okr.category] || {
+    gradient: "from-slate-500 to-slate-600",
+    solid: "#64748b",
+  };
 
   return (
     <div className="card hover:shadow-xl transition-all duration-200 p-4 sm:p-5">
-      {/* Header clicável - RESPONSIVE */}
+      {/* Header clicável COM PROGRESS RING - RESPONSIVE */}
       <button onClick={onToggle} className="w-full text-left">
         <div className="flex items-start gap-3 sm:gap-4">
-          {/* Ícone */}
-          <div
-            className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${bgGradient} rounded-lg flex items-center justify-center flex-shrink-0`}
-          >
-            <span className="text-xl sm:text-2xl">{okr.icon || "📊"}</span>
+          {/* ProgressRing substituindo ícone quadrado */}
+          <div className="flex-shrink-0">
+            <div className="relative">
+              <ProgressRing
+                value={okrProgress}
+                size={48}
+                strokeWidth={4}
+                color={colors.solid}
+                showPercentage={false}
+              />
+              {/* Emoji no centro */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-lg">{okr.icon || "📊"}</span>
+              </div>
+            </div>
           </div>
 
           {/* Conteúdo */}
@@ -274,7 +293,8 @@ function OKRCard({ okr, index, isExpanded, onToggle }) {
                   OKR {index + 1}: {okr.objective}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                  {okr.category} • {okr.keyResults?.length || 0} Key Results
+                  {okr.category} • {okr.keyResults?.length || 0} Key Results •{" "}
+                  {okrProgress}%
                 </p>
               </div>
               {isExpanded ? (
@@ -285,16 +305,11 @@ function OKRCard({ okr, index, isExpanded, onToggle }) {
             </div>
 
             {/* Barra de progresso do OKR */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 sm:h-2">
-                <div
-                  className={`bg-gradient-to-r ${bgGradient} h-1.5 sm:h-2 rounded-full transition-all duration-500`}
-                  style={{ width: `${okrProgress}%` }}
-                />
-              </div>
-              <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white flex-shrink-0">
-                {okrProgress}%
-              </span>
+            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 sm:h-2">
+              <div
+                className={`bg-gradient-to-r ${colors.gradient} h-1.5 sm:h-2 rounded-full transition-all duration-500`}
+                style={{ width: `${okrProgress}%` }}
+              />
             </div>
           </div>
         </div>
