@@ -293,10 +293,9 @@ export default function Dashboard() {
               ]}
               colors={["#3b82f6", "#94a3b8"]}
               valueFormatter={(v) => `${Number(v).toFixed(1)}h`}
-              height={250}
+              height={280}
             />
 
-            {/* Distribuição de Horas (Pizza) - CORRIGIDO SEM LABELS */}
             <PieChartComponent
               title="Distribuição de Horas Reais"
               data={pieChartData}
@@ -304,7 +303,7 @@ export default function Dashboard() {
               nameKey="name"
               colors={["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"]}
               valueFormatter={(v) => `${Number(v).toFixed(1)}h`}
-              height={250}
+              height={320}
               showLabels={false}
             />
           </div>
@@ -410,8 +409,8 @@ export default function Dashboard() {
             </div>
             <div className="flex flex-col sm:flex-row sm:justify-between gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               <span>
-                {data.weeklyProgress.real}h de {data.weeklyProgress.planned}h
-                planejadas
+                {Number(data.weeklyProgress.real).toFixed(1)}h de{" "}
+                {Number(data.weeklyProgress.planned).toFixed(1)}h planejadas
               </span>
               <span>Meta: 20-23h</span>
             </div>
