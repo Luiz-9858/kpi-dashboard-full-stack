@@ -274,6 +274,7 @@ export function AreaChartComponent({
 }
 
 // Gráfico de Pizza - ATUALIZADO com showLabels
+// DEPOIS (CORRIGIDO):
 export function PieChartComponent({
   data,
   dataKey = "value",
@@ -282,7 +283,7 @@ export function PieChartComponent({
   height = 300,
   colors = Object.values(CHART_COLORS),
   valueFormatter = (value) => value,
-  showLabels = true, // ← NOVA PROP
+  showLabels = true,
 }) {
   const { isDark } = useTheme();
   const textColor = isDark ? "#94a3b8" : "#64748b";
@@ -290,19 +291,19 @@ export function PieChartComponent({
   return (
     <div className="card">
       {title && (
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+        <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-3 sm:mb-4">
           {title}
         </h3>
       )}
       <ResponsiveContainer width="100%" height={height}>
-        <PieChart>
+        <PieChart margin={{ top: 0, right: 0, bottom: 30, left: 0 }}>
           <Pie
             data={data}
             dataKey={dataKey}
             nameKey={nameKey}
             cx="50%"
-            cy="50%"
-            outerRadius={100}
+            cy="45%"
+            outerRadius="65%"
             label={
               showLabels
                 ? ({ name, percent }) =>
