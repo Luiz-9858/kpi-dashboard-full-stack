@@ -1,5 +1,6 @@
 // components/KPICard.js
 // Componente para exibir um KPI individual com status visual
+// COM ANIMAÇÕES NATIVAS
 
 import { TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 
@@ -11,7 +12,7 @@ export default function KPICard({ kpi }) {
     status,
     unit = "",
     icon: Icon,
-    trend = null, // 'up', 'down', 'stable'
+    trend = null,
     trendValue = null,
   } = kpi;
 
@@ -49,6 +50,18 @@ export default function KPICard({ kpi }) {
   const calculateProgress = () => {
     if (!target) return 0;
     const { min, max } = target;
+
+    // Se min e max são iguais (ex: 7-7)
+    if (min === max) {
+      return value >= max ? 100 : (value / max) * 100;
+    }
+
+    // Se min é 0 (ex: 0-2)
+    if (min === 0) {
+      return max > 0 ? (value / max) * 100 : 0;
+    }
+
+    // Cálculo normal
     if (value >= max) return 100;
     if (value <= min) return (value / min) * 50;
     const range = max - min;
@@ -77,12 +90,14 @@ export default function KPICard({ kpi }) {
   };
 
   return (
-    <div className="kpi-card animate-fade-in group hover:scale-[1.02] transition-transform">
-      {/* Header com ícone e status - CORRIGIDO */}
+    <div className="kpi-card group transition-all duration-300">
+      {/* Header com ícone e status */}
       <div className="kpi-card-header">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {Icon && (
-            <div className={`p-2 rounded-lg ${colors.bg} flex-shrink-0`}>
+            <div
+              className={`p-2 rounded-lg ${colors.bg} flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}
+            >
               <Icon className={`w-5 h-5 ${colors.icon}`} />
             </div>
           )}
@@ -130,10 +145,10 @@ export default function KPICard({ kpi }) {
         </div>
       )}
 
-      {/* Barra de progresso */}
+      {/* Barra de progresso COM ANIMAÇÃO */}
       <div className="progress-bar mt-3">
         <div
-          className={`progress-bar-fill ${colors.progress}`}
+          className={`progress-bar-fill ${colors.progress} transition-all duration-1000 ease-out`}
           style={{ width: `${progress}%` }}
         />
       </div>

@@ -75,7 +75,7 @@ export function calculateProductivityKPIs(hoursWeek, hourTracker) {
     },
     streak: {
       value: streak,
-      target: { min: 7, max: 999 },
+      target: { min: 7, max: 7 },
       status: streak >= 7 ? "success" : "warning",
     },
   };
