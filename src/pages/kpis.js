@@ -1,24 +1,35 @@
 // pages/kpis.js
-// Página de KPIs Detalhados
-// OTIMIZADO PARA MOBILE - Responsividade completa
+// Página completa de KPIs com 15 indicadores
+// OTIMIZADO PARA MOBILE + ANIMAÇÕES
 
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Header from "@/components/Header";
+import KPICard from "@/components/KPICard";
 import { SkeletonCard, ErrorState } from "@/components/Loading";
 import {
-  TrendingUp,
+  BarChart3,
   Code,
-  BookOpen,
+  Book,
   Globe,
-  Target,
   Calendar,
+  Target,
+  GitBranch,
+  Bug,
+  GitPullRequest,
+  FolderCheck,
+  GraduationCap,
+  Calculator,
+  Lightbulb,
+  MessageCircle,
+  FileText,
 } from "lucide-react";
 
 export default function KPIsPage() {
-  const [kpis, setKpis] = useState(null);
+  const [kpisData, setKpisData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   useEffect(() => {
     fetchKPIs();
@@ -31,8 +42,8 @@ export default function KPIsPage() {
 
       if (!response.ok) throw new Error("Erro ao buscar KPIs");
 
-      const data = await response.json();
-      setKpis(data.data.kpis);
+      const result = await response.json();
+      setKpisData(result.data?.kpis || null);
       setError(null);
     } catch (err) {
       console.error("Erro:", err);
@@ -42,35 +53,173 @@ export default function KPIsPage() {
     }
   }
 
-  // Calcula estatísticas gerais
-  const getStats = () => {
-    if (!kpis) return { total: 0, success: 0, warning: 0, danger: 0 };
+  if (loading) {
+    return (
+      <>
+        <Head>
+          <title>KPIs | Dashboard</title>
+        </Head>
+        <Header />
+        <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </div>
+          </div>
+        </main>
+      </>
+    );
+  }
 
-    const allKpis = [
-      ...Object.values(kpis.productivity || {}),
-      ...Object.values(kpis.practice || {}),
-      ...Object.values(kpis.learning || {}),
-      ...Object.values(kpis.language || {}),
-    ];
+  if (error) {
+    return (
+      <>
+        <Head>
+          <title>Erro | KPIs</title>
+        </Head>
+        <Header />
+        <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            <ErrorState error={error} onRetry={fetchKPIs} />
+          </div>
+        </main>
+      </>
+    );
+  }
 
-    return {
-      total: allKpis.length,
-      success: allKpis.filter((k) => k.status === "success").length,
-      warning: allKpis.filter((k) => k.status === "warning").length,
-      danger: allKpis.filter((k) => k.status === "danger").length,
-    };
+  // Organiza KPIs por categoria
+  const kpisByCategory = {
+    productivity: [
+      {
+        title: "Horas Prática",
+        ...kpisData.productivity.praticaHours,
+        unit: "h",
+        icon: Code,
+      },
+      {
+        title: "Horas Teoria",
+        ...kpisData.productivity.teoriaHours,
+        unit: "h",
+        icon: Book,
+      },
+      {
+        title: "Horas Inglês",
+        ...kpisData.productivity.inglesHours,
+        unit: "h",
+        icon: Globe,
+      },
+      {
+        title: "Total de Horas",
+        ...kpisData.productivity.totalHours,
+        unit: "h",
+        icon: BarChart3,
+      },
+      {
+        title: "Dias Estudados",
+        ...kpisData.productivity.daysStudied,
+        unit: "",
+        icon: Calendar,
+      },
+      {
+        title: "Streak Dias",
+        ...kpisData.productivity.streak,
+        unit: "",
+        icon: Target,
+      },
+    ],
+    practice: [
+      {
+        title: "Commits GitHub",
+        ...kpisData.practice.commits,
+        unit: "",
+        icon: GitBranch,
+      },
+      {
+        title: "Features Concluídas",
+        ...kpisData.practice.features,
+        unit: "",
+        icon: Target,
+      },
+      {
+        title: "Bugs Resolvidos",
+        ...kpisData.practice.bugs,
+        unit: "",
+        icon: Bug,
+      },
+      {
+        title: "PRs Criados",
+        ...kpisData.practice.prs,
+        unit: "",
+        icon: GitPullRequest,
+      },
+      {
+        title: "Projetos Finalizados",
+        ...kpisData.practice.projects,
+        unit: "",
+        icon: FolderCheck,
+      },
+    ],
+    learning: [
+      {
+        title: "Módulos Concluídos",
+        ...kpisData.learning.modules,
+        unit: "",
+        icon: GraduationCap,
+      },
+      {
+        title: "Exercícios Algoritmos",
+        ...kpisData.learning.exercises,
+        unit: "",
+        icon: Calculator,
+      },
+      {
+        title: "Conceitos Dominados",
+        ...kpisData.learning.concepts,
+        unit: "",
+        icon: Lightbulb,
+      },
+    ],
+    language: [
+      {
+        title: "Lições Method Callan",
+        ...kpisData.language.lessons,
+        unit: "",
+        icon: MessageCircle,
+      },
+      {
+        title: "Worksheets Completas",
+        ...kpisData.language.worksheets,
+        unit: "",
+        icon: FileText,
+      },
+    ],
   };
 
-  const stats = getStats();
+  // Filtra KPIs baseado na categoria selecionada
+  const getFilteredKPIs = () => {
+    if (selectedCategory === "all") {
+      return [
+        ...kpisByCategory.productivity,
+        ...kpisByCategory.practice,
+        ...kpisByCategory.learning,
+        ...kpisByCategory.language,
+      ];
+    }
+    return kpisByCategory[selectedCategory] || [];
+  };
+
+  const filteredKPIs = getFilteredKPIs();
 
   return (
     <>
       <Head>
-        <title>KPIs | KPI Dashboard</title>
-        <meta
-          name="description"
-          content="Todos os indicadores de performance"
-        />
+        <title>KPIs Completos | Dashboard</title>
+        <meta name="description" content="Todos os 15 KPIs de acompanhamento" />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1"
@@ -81,256 +230,135 @@ export default function KPIsPage() {
         <Header />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          {/* Cabeçalho - RESPONSIVE */}
-          <div className="mb-6 sm:mb-8">
+          {/* Cabeçalho - ANIMAÇÃO */}
+          <div className="mb-6 sm:mb-8 animate-fade-in-down">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
-                  KPIs Detalhados
+                  KPIs Completos
                 </h1>
-                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1">
-                  Acompanhe todos os seus indicadores de performance
+                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+                  Acompanhe todos os 15 indicadores de performance
                 </p>
               </div>
             </div>
 
-            {/* Cards de estatísticas - RESPONSIVE */}
-            {!loading && !error && (
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-                <div className="card p-3 sm:p-4">
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">
-                    Total
-                  </p>
-                  <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                    {stats.total}
-                  </p>
-                </div>
-                <div className="card p-3 sm:p-4">
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">
-                    Ótimo 🟢
-                  </p>
-                  <p className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">
-                    {stats.success}
-                  </p>
-                </div>
-                <div className="card p-3 sm:p-4">
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">
-                    Atenção 🟡
-                  </p>
-                  <p className="text-xl sm:text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                    {stats.warning}
-                  </p>
-                </div>
-                <div className="card p-3 sm:p-4">
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-1">
-                    Crítico 🔴
-                  </p>
-                  <p className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400">
-                    {stats.danger}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Loading */}
-          {loading && (
-            <div className="space-y-6 sm:space-y-8">
-              <div>
-                <div className="h-5 sm:h-6 w-36 sm:w-48 bg-slate-200 dark:bg-slate-700 rounded mb-4 animate-pulse" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                  <SkeletonCard />
-                  <SkeletonCard />
-                  <SkeletonCard />
-                </div>
+            {/* Filtros - ANIMAÇÃO */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 animate-fade-in-up delay-200">
+              <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
+                Categoria:
+              </span>
+              <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+                <button
+                  onClick={() => setSelectedCategory("all")}
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap hover-scale ${
+                    selectedCategory === "all"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  Todos (15)
+                </button>
+                <button
+                  onClick={() => setSelectedCategory("productivity")}
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap hover-scale ${
+                    selectedCategory === "productivity"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  📊 Produtividade (6)
+                </button>
+                <button
+                  onClick={() => setSelectedCategory("practice")}
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap hover-scale ${
+                    selectedCategory === "practice"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  💻 Prática (5)
+                </button>
+                <button
+                  onClick={() => setSelectedCategory("learning")}
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap hover-scale ${
+                    selectedCategory === "learning"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  📚 Aprendizado (3)
+                </button>
+                <button
+                  onClick={() => setSelectedCategory("language")}
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap hover-scale ${
+                    selectedCategory === "language"
+                      ? "bg-blue-600 text-white"
+                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  🌍 Idioma (2)
+                </button>
               </div>
             </div>
-          )}
+          </div>
 
-          {/* Error */}
-          {error && !loading && (
-            <ErrorState error={error} onRetry={fetchKPIs} />
-          )}
+          {/* Grid de KPIs - STAGGER */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 grid-stagger">
+            {filteredKPIs.map((kpi, index) => (
+              <div key={index} className="card-entrance">
+                <KPICard kpi={kpi} />
+              </div>
+            ))}
+          </div>
 
-          {/* KPIs */}
-          {!loading && !error && kpis && (
-            <div className="space-y-6 sm:space-y-8">
-              {/* Produtividade */}
-              {kpis.productivity && (
-                <KPISection
-                  title="Produtividade"
-                  icon={Calendar}
-                  color="blue"
-                  kpis={kpis.productivity}
-                />
-              )}
-
-              {/* Prática */}
-              {kpis.practice && (
-                <KPISection
-                  title="Prática"
-                  icon={Code}
-                  color="green"
-                  kpis={kpis.practice}
-                />
-              )}
-
-              {/* Aprendizado */}
-              {kpis.learning && (
-                <KPISection
-                  title="Aprendizado"
-                  icon={BookOpen}
-                  color="yellow"
-                  kpis={kpis.learning}
-                />
-              )}
-
-              {/* Idioma */}
-              {kpis.language && (
-                <KPISection
-                  title="Idioma"
-                  icon={Globe}
-                  color="purple"
-                  kpis={kpis.language}
-                />
-              )}
+          {/* Resumo - ANIMAÇÃO */}
+          {selectedCategory === "all" && kpisData && (
+            <div className="card mt-6 sm:mt-8 p-4 sm:p-6 animate-fade-in-up delay-500">
+              <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                📈 Resumo Geral
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="text-center p-3 rounded-lg bg-green-50 dark:bg-green-900/20">
+                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    {kpisData.summary?.success || 0}
+                  </p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                    🟢 Ótimo
+                  </p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
+                  <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                    {kpisData.summary?.warning || 0}
+                  </p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                    🟡 Atenção
+                  </p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-red-50 dark:bg-red-900/20">
+                  <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+                    {kpisData.summary?.danger || 0}
+                  </p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                    🔴 Baixo
+                  </p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                    {kpisData.summary?.total || 15}
+                  </p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                    Total
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </main>
       </div>
     </>
-  );
-}
-
-// Componente de Seção de KPIs - RESPONSIVE
-function KPISection({ title, icon: Icon, color, kpis }) {
-  const colorClasses = {
-    blue: "from-blue-500 to-cyan-500",
-    green: "from-green-500 to-emerald-500",
-    yellow: "from-yellow-500 to-orange-500",
-    purple: "from-purple-500 to-pink-500",
-  };
-
-  const kpiList = Object.entries(kpis).map(([key, data]) => ({
-    key,
-    ...data,
-  }));
-
-  return (
-    <div>
-      <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-        <div
-          className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${colorClasses[color]} rounded-lg flex items-center justify-center flex-shrink-0`}
-        >
-          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-        </div>
-        <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
-          {title}
-        </h2>
-        <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-          ({kpiList.length} KPIs)
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        {kpiList.map((kpi) => (
-          <KPICard key={kpi.key} kpi={kpi} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Componente de Card de KPI - RESPONSIVE
-function KPICard({ kpi }) {
-  const statusConfig = {
-    success: {
-      badge: "🟢 Ótimo",
-      badgeClass:
-        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-      barClass: "bg-gradient-to-r from-green-500 to-emerald-500",
-    },
-    warning: {
-      badge: "🟡 Atenção",
-      badgeClass:
-        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
-      barClass: "bg-gradient-to-r from-yellow-500 to-orange-500",
-    },
-    danger: {
-      badge: "🔴 Crítico",
-      badgeClass:
-        "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
-      barClass: "bg-gradient-to-r from-red-500 to-rose-500",
-    },
-  };
-
-  const config = statusConfig[kpi.status] || statusConfig.warning;
-
-  // Calcula porcentagem de progresso
-  const progress = kpi.target?.max
-    ? Math.min(100, (kpi.value / kpi.target.max) * 100)
-    : 0;
-
-  // Formata valor
-  const formatValue = (value, unit) => {
-    if (unit === "h") return `${value}h`;
-    if (unit === "dias") return `${value} dias`;
-    return value;
-  };
-
-  return (
-    <div className="card hover:shadow-xl transition-all duration-200 group p-3 sm:p-4">
-      {/* Header - RESPONSIVE */}
-      <div className="flex items-start justify-between mb-2 sm:mb-3 gap-2">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 mb-1 truncate">
-            {kpi.title}
-          </h3>
-          <div className="flex items-baseline gap-1 sm:gap-2">
-            <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-              {formatValue(kpi.value, kpi.unit)}
-            </span>
-            {kpi.unit && (
-              <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-                {kpi.unit}
-              </span>
-            )}
-          </div>
-        </div>
-        <span
-          className={`px-2 py-1 rounded text-[10px] sm:text-xs font-medium flex-shrink-0 ${config.badgeClass}`}
-        >
-          {config.badge}
-        </span>
-      </div>
-
-      {/* Meta - RESPONSIVE */}
-      {kpi.target && (
-        <div className="mb-2 sm:mb-3">
-          <div className="flex items-center justify-between mb-1 sm:mb-2">
-            <span className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-400 truncate">
-              Meta: {kpi.target.min}-{kpi.target.max} {kpi.unit}
-            </span>
-            <span className="text-xs sm:text-sm font-medium text-slate-900 dark:text-white flex-shrink-0 ml-2">
-              {Math.round(progress)}%
-            </span>
-          </div>
-          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 sm:h-2">
-            <div
-              className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${config.barClass}`}
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Ícone */}
-      <div className="pt-2 sm:pt-3 border-t border-slate-200 dark:border-slate-700">
-        <Target className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400 dark:text-slate-500" />
-      </div>
-    </div>
   );
 }
