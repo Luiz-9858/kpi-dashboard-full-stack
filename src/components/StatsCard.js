@@ -1,6 +1,6 @@
 // components/StatsCard.js
 // Cards de estatísticas rápidas para o topo do dashboard
-// COM SPARKLINE - Tendências visuais dos últimos 7 dias
+// COM SPARKLINE + ANIMAÇÕES NATIVAS
 
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { Sparkline } from "./AdvancedCharts";
@@ -11,15 +11,14 @@ export default function StatsCard({ stat }) {
     value,
     subtitle,
     icon: Icon,
-    trend = null, // 'up', 'down', 'stable'
+    trend = null,
     trendValue = null,
     trendLabel = "",
-    color = "blue", // 'blue', 'green', 'orange', 'purple', 'red'
+    color = "blue",
     onClick = null,
-    sparklineData = null, // NOVO: Array de dados para sparkline (últimos 7 dias)
+    sparklineData = null,
   } = stat;
 
-  // Define cores baseado no tipo
   const colorSchemes = {
     blue: {
       bg: "bg-blue-50 dark:bg-blue-900/20",
@@ -55,7 +54,6 @@ export default function StatsCard({ stat }) {
 
   const colors = colorSchemes[color] || colorSchemes.blue;
 
-  // Ícone de tendência
   const TrendIcon =
     trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Minus;
   const trendColor =
@@ -67,7 +65,7 @@ export default function StatsCard({ stat }) {
 
   return (
     <div
-      className={`card group hover:shadow-medium transition-all ${onClick ? "cursor-pointer" : ""}`}
+      className={`card group transition-all ${onClick ? "cursor-pointer" : ""}`}
       onClick={onClick}
     >
       {/* Header com ícone */}
@@ -123,7 +121,7 @@ export default function StatsCard({ stat }) {
           </div>
         ) : Icon ? (
           <div
-            className={`p-3 rounded-xl ${colors.bg} group-hover:scale-110 transition-transform`}
+            className={`p-3 rounded-xl ${colors.bg} group-hover:scale-110 transition-transform duration-300`}
           >
             <Icon className={`w-6 h-6 ${colors.icon}`} />
           </div>
