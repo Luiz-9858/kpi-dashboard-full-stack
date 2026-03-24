@@ -306,8 +306,7 @@ export function PieChartComponent({
             outerRadius="65%"
             label={
               showLabels
-                ? ({ name, percent }) =>
-                    `${name}: ${(percent * 100).toFixed(0)}%`
+                ? ({ name, percent }) => `${(percent * 100).toFixed(0)}%`
                 : false
             }
             labelLine={showLabels}
