@@ -56,9 +56,11 @@ export default function KPICard({ kpi }) {
       return value >= max ? 100 : (value / max) * 100;
     }
 
-    // Se min é 0 (ex: 0-2)
+    // Se min é 0 (ex: 0-2) - OPÇÃO B: estar dentro da meta = 100%
     if (min === 0) {
-      return max > 0 ? (value / max) * 100 : 0;
+      if (value >= 0 && value <= max) return 100; // Dentro da meta = 100%
+      if (value > max) return 100 + ((value - max) / max) * 50; // Acima da meta
+      return 0; // Não deveria acontecer (valor negativo)
     }
 
     // Cálculo normal
