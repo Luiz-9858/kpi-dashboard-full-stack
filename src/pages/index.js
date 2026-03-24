@@ -1,6 +1,6 @@
 // pages/index.js
 // Página principal do dashboard
-// OTIMIZADO PARA MOBILE + GRÁFICO DE PIZZA (CORRIGIDO)
+// OTIMIZADO PARA MOBILE + GRÁFICO DE PIZZA + ANIMAÇÕES
 
 import { useState, useEffect } from "react";
 import Head from "next/head";
@@ -95,7 +95,7 @@ export default function Dashboard() {
         <Header />
         <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-            <div className="card max-w-2xl mx-auto text-center">
+            <div className="card max-w-2xl mx-auto text-center animate-scale-in">
               <div className="text-4xl sm:text-5xl mb-4">⚠️</div>
               <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2">
                 Erro ao carregar dados
@@ -206,9 +206,16 @@ export default function Dashboard() {
   ];
 
   // Prepara dados para gráfico de pizza
+
+  // ✅ PREPARA DADOS PARA GRÁFICO DE PIZZA (ADICIONE AQUI!)
   const pieChartData = data.categoryBreakdown.map((cat) => ({
     name: cat.name,
     value: cat.real,
+  }));
+
+  const barChartData = data.categoryBreakdown.map((cat) => ({
+    ...cat,
+    name: cat.name.replace("🟢 Desenvolvimento Pessoal", "🟢 Dev. Pessoal"),
   }));
 
   return (
@@ -229,8 +236,8 @@ export default function Dashboard() {
 
       <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
-          {/* Cabeçalho - RESPONSIVE */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          {/* Cabeçalho - ANIMAÇÃO */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-down">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
                 Bem-vindo de volta! 👋
@@ -241,7 +248,7 @@ export default function Dashboard() {
             </div>
             <button
               onClick={fetchDashboardData}
-              className="btn-ghost flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto"
+              className="btn-ghost flex items-center justify-center sm:justify-start gap-2 w-full sm:w-auto hover-scale"
               title="Atualizar dados"
             >
               <Zap className="w-4 h-4" />
@@ -249,19 +256,20 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* Stats Cards - RESPONSIVE */}
+          {/* Stats Cards - STAGGER */}
           <section>
-            {/* Grid 1 coluna em mobile, 2 em tablet, 4 em desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 grid-stagger">
               {statsData.map((stat, index) => (
-                <StatsCard key={index} stat={stat} />
+                <div key={index} className="card-entrance hover-lift">
+                  <StatsCard stat={stat} />
+                </div>
               ))}
             </div>
           </section>
 
-          {/* KPIs Principais - RESPONSIVE */}
+          {/* KPIs Principais - STAGGER */}
           <section>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 animate-fade-in-up delay-300">
               <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                 KPIs Principais
               </h2>
@@ -272,44 +280,48 @@ export default function Dashboard() {
                 Ver todos →
               </a>
             </div>
-            {/* Grid 1 coluna em mobile, 2 em tablet, 3 em desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 grid-stagger">
               {kpiCards.map((kpi, index) => (
-                <KPICard key={index} kpi={kpi} />
+                <div key={index} className="card-entrance hover-lift">
+                  <KPICard kpi={kpi} />
+                </div>
               ))}
             </div>
           </section>
 
-          {/* Gráficos - RESPONSIVE */}
+          {/* Gráficos - CHART ENTRANCE */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Distribuição de Horas (Barras) */}
-            <BarChartComponent
-              title="Horas Plan vs Real"
-              data={data.categoryBreakdown}
-              xAxisKey="name"
-              dataKeys={[
-                { dataKey: "real", name: "Horas Reais" },
-                { dataKey: "planned", name: "Horas Planejadas" },
-              ]}
-              colors={["#3b82f6", "#94a3b8"]}
-              valueFormatter={(v) => `${Number(v).toFixed(1)}h`}
-              height={280}
-            />
+            <div className="chart-entrance">
+              <BarChartComponent
+                title="Horas Plan vs Real"
+                data={barChartData}
+                xAxisKey="name"
+                dataKeys={[
+                  { dataKey: "real", name: "Horas Reais" },
+                  { dataKey: "planned", name: "Horas Planejadas" },
+                ]}
+                colors={["#3b82f6", "#94a3b8"]}
+                valueFormatter={(v) => `${Number(v).toFixed(1)}h`}
+                height={280}
+              />
+            </div>
 
-            <PieChartComponent
-              title="Distribuição de Horas Reais"
-              data={pieChartData}
-              dataKey="value"
-              nameKey="name"
-              colors={["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"]}
-              valueFormatter={(v) => `${Number(v).toFixed(1)}h`}
-              height={320}
-              showLabels={false}
-            />
+            <div className="chart-entrance delay-200">
+              <PieChartComponent
+                title="Distribuição de Horas Reais"
+                data={pieChartData}
+                dataKey="value"
+                nameKey="name"
+                colors={["#3b82f6", "#8b5cf6", "#f59e0b", "#10b981", "#ef4444"]}
+                valueFormatter={(v) => `${Number(v).toFixed(1)}h`}
+                height={320}
+                showLabels={true}
+              />
+            </div>
           </div>
 
-          {/* Tasks de Hoje - TODAS AS TASKS (SEM LIMITE) */}
-          <section className="card">
+          {/* Tasks de Hoje - FADE IN UP */}
+          <section className="card animate-fade-in-up delay-500">
             <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Tasks de Hoje{" "}
               {data.todayTasks.length > 0 && (
@@ -325,11 +337,11 @@ export default function Dashboard() {
                 📋 Nenhuma task para hoje
               </div>
             ) : (
-              <div className="space-y-2 sm:space-y-3">
+              <div className="space-y-2 sm:space-y-3 stagger-children">
                 {data.todayTasks.map((task, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors hover-lift"
                   >
                     <div
                       className={`
@@ -355,7 +367,7 @@ export default function Dashboard() {
                       className={`
                       text-[10px] sm:text-xs px-2 py-1 rounded-full flex-shrink-0 font-medium
                       ${
-                        task.status === "Concluído"
+                        task.status === "Feito" || task.status === "Concluído"
                           ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
                           : task.status === "Fazendo"
                             ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
@@ -371,8 +383,8 @@ export default function Dashboard() {
             )}
           </section>
 
-          {/* Progresso Semanal - RESPONSIVE */}
-          <section className="card">
+          {/* Progresso Semanal - FADE IN UP */}
+          <section className="card animate-fade-in-up delay-700">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
               <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
                 Progresso Semanal
