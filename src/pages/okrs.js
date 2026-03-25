@@ -1,8 +1,6 @@
 // pages/okrs.js
 // Página de OKRs (Objectives and Key Results) Q1 2026
-// ATUALIZADO: Busca OKRs automaticamente do Notion
-// OTIMIZADO PARA MOBILE - Responsividade completa
-// COM CIRCULAR PROGRESS - Visualização avançada
+// COM CIRCULAR PROGRESS + ANIMAÇÕES
 
 import { useState, useEffect } from "react";
 import Head from "next/head";
@@ -23,9 +21,8 @@ export default function OKRsPage() {
   const [okrsSummary, setOkrsSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [expandedOKR, setExpandedOKR] = useState(0); // Primeiro OKR expandido por padrão
+  const [expandedOKR, setExpandedOKR] = useState(0);
 
-  // Busca OKRs da API
   useEffect(() => {
     fetchOKRs();
   }, []);
@@ -39,7 +36,6 @@ export default function OKRsPage() {
 
       const result = await response.json();
 
-      // Extrai OKRs e summary da resposta
       setOkrsData(result.data?.okrs || []);
       setOkrsSummary(result.data?.okrsSummary || null);
       setError(null);
@@ -51,7 +47,6 @@ export default function OKRsPage() {
     }
   }
 
-  // Usa os dados do summary se disponível, senão calcula localmente
   const totalOKRs = okrsSummary?.totalOKRs || okrsData.length;
   const totalKRs =
     okrsSummary?.totalKRs ||
@@ -78,9 +73,9 @@ export default function OKRsPage() {
         <Header />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          {/* Cabeçalho - RESPONSIVE */}
+          {/* Cabeçalho - ANIMAÇÃO */}
           <div className="mb-6 sm:mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6 animate-fade-in-down">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Target className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
@@ -107,17 +102,16 @@ export default function OKRsPage() {
               <ErrorState error={error} onRetry={fetchOKRs} />
             )}
 
-            {/* Progresso Geral COM CIRCULAR PROGRESS - RESPONSIVE */}
+            {/* Progresso Geral - CIRCULAR PROGRESS COM ANIMAÇÃO */}
             {!loading && !error && (
-              <div className="card mb-4 sm:mb-6 p-4 sm:p-6">
+              <div className="card mb-4 sm:mb-6 p-4 sm:p-6 animate-scale-in">
                 <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4 sm:mb-6">
                   Progresso Geral
                 </h2>
 
-                {/* Grid: CircularProgress + Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* CircularProgress GRANDE */}
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center animate-scale-in delay-200">
                     <CircularProgress
                       value={overallProgress}
                       size={160}
@@ -127,9 +121,9 @@ export default function OKRsPage() {
                     />
                   </div>
 
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    <div className="text-center p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                  {/* Stats Grid COM STAGGER */}
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 grid-stagger">
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 card-entrance hover-lift">
                       <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
                         {totalOKRs}
                       </p>
@@ -137,7 +131,7 @@ export default function OKRsPage() {
                         OKRs
                       </p>
                     </div>
-                    <div className="text-center p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 card-entrance hover-lift">
                       <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
                         {totalKRs}
                       </p>
@@ -145,7 +139,7 @@ export default function OKRsPage() {
                         Key Results
                       </p>
                     </div>
-                    <div className="text-center p-3 sm:p-4 rounded-lg bg-green-50 dark:bg-green-900/20">
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-green-50 dark:bg-green-900/20 card-entrance hover-lift">
                       <p className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">
                         {completedKRs}
                       </p>
@@ -153,7 +147,7 @@ export default function OKRsPage() {
                         Concluídos
                       </p>
                     </div>
-                    <div className="text-center p-3 sm:p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 card-entrance hover-lift">
                       <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
                         {inProgressKRs}
                       </p>
@@ -167,26 +161,27 @@ export default function OKRsPage() {
             )}
           </div>
 
-          {/* Lista de OKRs COM PROGRESS RING - RESPONSIVE */}
+          {/* Lista de OKRs COM STAGGER */}
           {!loading && !error && okrsData.length > 0 && (
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-3 sm:space-y-4 stagger-children">
               {okrsData.map((okr, index) => (
-                <OKRCard
-                  key={okr.id || index}
-                  okr={okr}
-                  index={index}
-                  isExpanded={expandedOKR === index}
-                  onToggle={() =>
-                    setExpandedOKR(expandedOKR === index ? -1 : index)
-                  }
-                />
+                <div key={okr.id || index} className="animate-fade-in-up">
+                  <OKRCard
+                    okr={okr}
+                    index={index}
+                    isExpanded={expandedOKR === index}
+                    onToggle={() =>
+                      setExpandedOKR(expandedOKR === index ? -1 : index)
+                    }
+                  />
+                </div>
               ))}
             </div>
           )}
 
           {/* Mensagem se não houver OKRs */}
           {!loading && !error && okrsData.length === 0 && (
-            <div className="card text-center py-8 sm:py-12 px-4">
+            <div className="card text-center py-8 sm:py-12 px-4 animate-scale-in">
               <Target className="w-10 h-10 sm:w-12 sm:h-12 text-slate-400 mx-auto mb-3 sm:mb-4" />
               <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-2">
                 Nenhum OKR encontrado
@@ -197,9 +192,9 @@ export default function OKRsPage() {
             </div>
           )}
 
-          {/* Timeline - RESPONSIVE */}
+          {/* Timeline - ANIMAÇÃO */}
           {!loading && !error && okrsData.length > 0 && (
-            <div className="card mt-6 sm:mt-8 p-4 sm:p-5">
+            <div className="card mt-6 sm:mt-8 p-4 sm:p-5 animate-fade-in-up delay-500">
               <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-3 sm:mb-4">
                 📅 Timeline {okrsSummary?.quarter || "Q1 2026"}
               </h2>
@@ -245,12 +240,10 @@ export default function OKRsPage() {
   );
 }
 
-// Componente de Card de OKR COM PROGRESS RING - RESPONSIVE
+// Componente de Card de OKR - COM HOVER
 function OKRCard({ okr, index, isExpanded, onToggle }) {
-  // Usa o progresso já calculado pela API
   const okrProgress = okr.progress || 0;
 
-  // Cores por categoria
   const categoryColors = {
     Projeto: { gradient: "from-purple-500 to-pink-500", solid: "#8b5cf6" },
     Aprendizado: { gradient: "from-blue-500 to-cyan-500", solid: "#3b82f6" },
@@ -264,11 +257,9 @@ function OKRCard({ okr, index, isExpanded, onToggle }) {
   };
 
   return (
-    <div className="card hover:shadow-xl transition-all duration-200 p-4 sm:p-5">
-      {/* Header clicável COM PROGRESS RING - RESPONSIVE */}
+    <div className="card hover:shadow-xl transition-all duration-200 p-4 sm:p-5 hover-lift">
       <button onClick={onToggle} className="w-full text-left">
         <div className="flex items-start gap-3 sm:gap-4">
-          {/* ProgressRing substituindo ícone quadrado */}
           <div className="flex-shrink-0">
             <div className="relative">
               <ProgressRing
@@ -278,14 +269,12 @@ function OKRCard({ okr, index, isExpanded, onToggle }) {
                 color={colors.solid}
                 showPercentage={false}
               />
-              {/* Emoji no centro */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="text-lg">{okr.icon || "📊"}</span>
               </div>
             </div>
           </div>
 
-          {/* Conteúdo */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="flex-1 min-w-0">
@@ -304,7 +293,6 @@ function OKRCard({ okr, index, isExpanded, onToggle }) {
               )}
             </div>
 
-            {/* Barra de progresso do OKR */}
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 sm:h-2">
               <div
                 className={`bg-gradient-to-r ${colors.gradient} h-1.5 sm:h-2 rounded-full transition-all duration-500`}
@@ -315,7 +303,6 @@ function OKRCard({ okr, index, isExpanded, onToggle }) {
         </div>
       </button>
 
-      {/* Key Results (expansível) - RESPONSIVE */}
       {isExpanded && okr.keyResults && okr.keyResults.length > 0 && (
         <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-slate-200 dark:border-slate-700 space-y-2 sm:space-y-3">
           {okr.keyResults.map((kr, krIndex) => (
@@ -327,14 +314,13 @@ function OKRCard({ okr, index, isExpanded, onToggle }) {
   );
 }
 
-// Componente de Key Result - RESPONSIVE
+// Componente de Key Result
 function KeyResultItem({ kr }) {
   const isCompleted = kr.progress >= 100;
   const isInProgress = kr.progress > 0 && kr.progress < 100;
 
   return (
     <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-      {/* Ícone de status */}
       <div className="flex-shrink-0 mt-0.5 sm:mt-1">
         {isCompleted ? (
           <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
@@ -347,7 +333,6 @@ function KeyResultItem({ kr }) {
         )}
       </div>
 
-      {/* Conteúdo */}
       <div className="flex-1 min-w-0">
         <p
           className={`text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${
@@ -359,7 +344,6 @@ function KeyResultItem({ kr }) {
           {kr.keyResult}
         </p>
 
-        {/* Barra de progresso */}
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1 sm:h-1.5">
             <div
@@ -382,7 +366,6 @@ function KeyResultItem({ kr }) {
           </span>
         </div>
 
-        {/* Meta */}
         {kr.target && (
           <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
             Meta: {kr.target}
