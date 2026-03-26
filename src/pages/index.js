@@ -289,6 +289,66 @@ export default function Dashboard() {
             </div>
           </section>
 
+          {/* Card de Relatórios - NOVO! */}
+          <section className="animate-fade-in-up delay-400">
+            <a
+              href="/relatorios"
+              className="card p-6 hover:shadow-xl transition-all duration-300 cursor-pointer block group"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <svg
+                        className="w-6 h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                        📊 Relatório Semanal
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Insights e análises personalizadas
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                    <span>✨ Conquistas</span>
+                    <span>•</span>
+                    <span>⚠️ Pontos de atenção</span>
+                    <span>•</span>
+                    <span>💡 Recomendações</span>
+                  </div>
+                </div>
+                <div className="text-blue-600 dark:text-blue-400 group-hover:translate-x-2 transition-transform">
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </a>
+          </section>
+
           {/* Gráficos - CHART ENTRANCE */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="chart-entrance">
