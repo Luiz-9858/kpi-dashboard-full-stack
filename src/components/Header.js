@@ -1,20 +1,22 @@
 // components/Header.js
 // Cabeçalho do dashboard com navegação e toggle de tema
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { useTheme } from '../hooks/useTheme';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useTheme } from "../hooks/useTheme";
 import {
   LayoutDashboard,
   Target,
   TrendingUp,
   FolderOpen,
+  FileText,
+  Github,
   Moon,
   Sun,
   Menu,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 
 export default function Header() {
   const { isDark, toggleTheme, mounted } = useTheme();
@@ -23,15 +25,17 @@ export default function Header() {
 
   // Links de navegação
   const navLinks = [
-    { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/kpis', label: 'KPIs', icon: TrendingUp },
-    { href: '/okrs', label: 'OKRs', icon: Target },
-    { href: '/projetos', label: 'Projetos', icon: FolderOpen },
+    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/kpis", label: "KPIs", icon: TrendingUp },
+    { href: "/okrs", label: "OKRs", icon: Target },
+    { href: "/projetos", label: "Projetos", icon: FolderOpen },
+    { href: "/relatorios", label: "Relatórios", icon: FileText },
+    { href: "/github", label: "GitHub", icon: Github },
   ];
 
   // Verifica se link está ativo
   const isActive = (href) => {
-    if (href === '/') return router.pathname === '/';
+    if (href === "/") return router.pathname === "/";
     return router.pathname.startsWith(href);
   };
 
@@ -45,7 +49,6 @@ export default function Header() {
       <header className="header">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            
             {/* Logo e Título */}
             <div className="flex items-center gap-3">
               <Link href="/" className="flex items-center gap-2 group">
@@ -68,7 +71,7 @@ export default function Header() {
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const active = isActive(link.href);
-                
+
                 return (
                   <Link
                     key={link.href}
@@ -76,9 +79,10 @@ export default function Header() {
                     className={`
                       flex items-center gap-2 px-4 py-2 rounded-lg
                       transition-all duration-200 font-medium text-sm
-                      ${active 
-                        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
-                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ${
+                        active
+                          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                          : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                       }
                     `}
                   >
@@ -91,13 +95,12 @@ export default function Header() {
 
             {/* Botões de ação */}
             <div className="flex items-center gap-2">
-              
               {/* Toggle tema */}
               {mounted && (
                 <button
                   onClick={toggleTheme}
                   className="btn-ghost p-2 rounded-lg"
-                  title={isDark ? 'Modo claro' : 'Modo escuro'}
+                  title={isDark ? "Modo claro" : "Modo escuro"}
                 >
                   {isDark ? (
                     <Sun className="w-5 h-5" />
@@ -128,18 +131,18 @@ export default function Header() {
       {mobileMenuOpen && (
         <>
           {/* Backdrop */}
-          <div 
+          <div
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
             onClick={toggleMobileMenu}
           />
-          
+
           {/* Menu */}
           <div className="fixed top-16 left-0 right-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-50 md:hidden animate-slide-up">
             <nav className="px-4 py-4 space-y-1">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const active = isActive(link.href);
-                
+
                 return (
                   <Link
                     key={link.href}
@@ -148,9 +151,10 @@ export default function Header() {
                     className={`
                       flex items-center gap-3 px-4 py-3 rounded-lg
                       transition-all duration-200 font-medium
-                      ${active 
-                        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
-                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ${
+                        active
+                          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+                          : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                       }
                     `}
                   >
@@ -187,10 +191,7 @@ export function HeaderCompact({ title, subtitle }) {
           </div>
 
           {mounted && (
-            <button
-              onClick={toggleTheme}
-              className="btn-ghost p-2 rounded-lg"
-            >
+            <button onClick={toggleTheme} className="btn-ghost p-2 rounded-lg">
               {isDark ? (
                 <Sun className="w-5 h-5" />
               ) : (
