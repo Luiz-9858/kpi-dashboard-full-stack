@@ -1,91 +1,10 @@
 // lib/github.js
-// Integração com GitHub API para buscar commits, PRs, repos
+// Integração com GitHub API - VERSÃO SIMPLIFICADA
+// Correção de fuso horário GMT-3 (Brasil) - SIMPLIFICADO
 // Username: Luiz-9858
 
 const GITHUB_USERNAME = "Luiz-9858";
 const GITHUB_API = "https://api.github.com";
-
-/**
- * Busca eventos recentes do usuário (commits, PRs, issues)
- */
-export async function getGitHubEvents(days = 7) {
-  try {
-    const response = await fetch(
-      `${GITHUB_API}/users/${GITHUB_USERNAME}/events?per_page=100`,
-      {
-        headers: {
-          Accept: "application/vnd.github.v3+json",
-        },
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`);
-    }
-
-    const events = await response.json();
-
-    // Filtra eventos dos últimos N dias
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - days);
-
-    const recentEvents = events.filter((event) => {
-      const eventDate = new Date(event.created_at);
-      return eventDate >= cutoffDate;
-    });
-
-    return recentEvents;
-  } catch (error) {
-    console.error("[GitHub] Erro ao buscar eventos:", error);
-    return [];
-  }
-}
-
-/**
- * Conta commits por período
- */
-export async function countCommits(days = 7) {
-  const events = await getGitHubEvents(days);
-
-  const pushEvents = events.filter((e) => e.type === "PushEvent");
-
-  const totalCommits = pushEvents.reduce((sum, event) => {
-    return sum + (event.payload.commits?.length || 0);
-  }, 0);
-
-  return {
-    total: totalCommits,
-    pushEvents: pushEvents.length,
-    avgPerDay: (totalCommits / days).toFixed(1),
-  };
-}
-
-/**
- * Lista Pull Requests criados
- */
-export async function getPullRequests(days = 30) {
-  const events = await getGitHubEvents(days);
-
-  const prEvents = events.filter((e) => e.type === "PullRequestEvent");
-
-  const prs = prEvents.map((event) => ({
-    repo: event.repo.name,
-    title: event.payload.pull_request.title,
-    state: event.payload.pull_request.state,
-    createdAt: event.created_at,
-    url: event.payload.pull_request.html_url,
-  }));
-
-  return {
-    total: prs.length,
-    open: prs.filter((pr) => pr.state === "open").length,
-    closed: prs.filter((pr) => pr.state === "closed").length,
-    merged: prEvents.filter(
-      (e) => e.payload.action === "closed" && e.payload.pull_request.merged,
-    ).length,
-    prs,
-  };
-}
 
 /**
  * Busca repositórios do usuário
@@ -120,10 +39,311 @@ export async function getRepositories() {
       updatedAt: repo.updated_at,
       url: repo.html_url,
       homepage: repo.homepage,
+      defaultBranch: repo.default_branch,
     }));
   } catch (error) {
     console.error("[GitHub] Erro ao buscar repositórios:", error);
     return [];
+  }
+}
+
+/**
+ * Busca commits de um repositório específico (últimos N dias)
+ */
+async function getRepoCommits(repoFullName, days = 7) {
+  try {
+    const since = new Date();
+    since.setDate(since.getDate() - days);
+    const sinceISO = since.toISOString();
+
+    const response = await fetch(
+      `${GITHUB_API}/repos/${repoFullName}/commits?author=${GITHUB_USERNAME}&since=${sinceISO}&per_page=100`,
+      {
+        headers: {
+          Accept: "application/vnd.github.v3+json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      // Se repo está vazio ou sem acesso, retorna array vazio
+      if (response.status === 409 || response.status === 404) {
+        return [];
+      }
+      throw new Error(`GitHub API error: ${response.status}`);
+    }
+
+    const commits = await response.json();
+    return commits;
+  } catch (error) {
+    console.error(
+      `[GitHub] Erro ao buscar commits de ${repoFullName}:`,
+      error.message,
+    );
+    return [];
+  }
+}
+
+/**
+ * Conta commits totais dos últimos N dias (de todos os repos)
+ */
+export async function countCommits(days = 7) {
+  try {
+    const repos = await getRepositories();
+
+    if (repos.length === 0) {
+      console.log("[GitHub] Nenhum repositório encontrado");
+      return { total: 0, avgPerDay: "0.0", reposChecked: 0 };
+    }
+
+    // Busca commits de todos os repos ativos em paralelo
+    // Limita a 10 repos mais recentes para não sobrecarregar a API
+    const recentRepos = repos
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .slice(0, 10);
+
+    console.log(`[GitHub] Buscando commits de ${recentRepos.length} repos...`);
+
+    const commitsPromises = recentRepos.map((repo) =>
+      getRepoCommits(repo.fullName, days),
+    );
+
+    const commitsArrays = await Promise.all(commitsPromises);
+
+    // Conta total de commits
+    const totalCommits = commitsArrays.reduce(
+      (sum, commits) => sum + commits.length,
+      0,
+    );
+
+    console.log(`[GitHub] Total de commits encontrados: ${totalCommits}`);
+
+    return {
+      total: totalCommits,
+      avgPerDay: (totalCommits / days).toFixed(1),
+      reposChecked: recentRepos.length,
+    };
+  } catch (error) {
+    console.error("[GitHub] Erro ao contar commits:", error);
+    return {
+      total: 0,
+      avgPerDay: "0.0",
+      reposChecked: 0,
+    };
+  }
+}
+
+/**
+ * Gera dados para gráfico de commits (últimos N dias)
+ * CORRIGIDO: Aplica offset de -3h (GMT-3) ao agrupar commits por dia
+ */
+export async function getCommitsChartData(days = 7) {
+  try {
+    const repos = await getRepositories();
+
+    if (repos.length === 0) {
+      console.log("[GitHub] Nenhum repositório para gráfico");
+      return createEmptyChartData(days);
+    }
+
+    // Limita a 10 repos mais recentes
+    const recentRepos = repos
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .slice(0, 10);
+
+    // Busca commits de todos os repos
+    const commitsPromises = recentRepos.map((repo) =>
+      getRepoCommits(repo.fullName, days),
+    );
+
+    const commitsArrays = await Promise.all(commitsPromises);
+    const allCommits = commitsArrays.flat();
+
+    console.log(`[GitHub] Total de commits para gráfico: ${allCommits.length}`);
+
+    // Cria array de últimos N dias
+    const chartData = [];
+
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+
+      // Zera horário para comparação apenas de data
+      date.setHours(0, 0, 0, 0);
+      const dateStr = date.toISOString().split("T")[0];
+
+      // Conta commits neste dia (aplicando offset GMT-3)
+      const commitsOnDate = allCommits.filter((commit) => {
+        // Pega data UTC do commit
+        const commitDateUTC = new Date(commit.commit.author.date);
+
+        // Aplica offset de -3 horas (GMT-3)
+        const commitDateBR = new Date(
+          commitDateUTC.getTime() - 3 * 60 * 60 * 1000,
+        );
+
+        // Zera horário
+        commitDateBR.setHours(0, 0, 0, 0);
+
+        // Compara datas
+        return commitDateBR.getTime() === date.getTime();
+      }).length;
+
+      chartData.push({
+        date: dateStr,
+        commits: commitsOnDate,
+        label: date.toLocaleDateString("pt-BR", {
+          weekday: "short",
+          day: "numeric",
+        }),
+      });
+    }
+
+    return chartData;
+  } catch (error) {
+    console.error("[GitHub] Erro ao gerar dados do gráfico:", error);
+    return createEmptyChartData(days);
+  }
+}
+
+/**
+ * Cria array vazio para gráfico (fallback)
+ */
+function createEmptyChartData(days = 7) {
+  const emptyData = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    emptyData.push({
+      date: date.toISOString().split("T")[0],
+      commits: 0,
+      label: date.toLocaleDateString("pt-BR", {
+        weekday: "short",
+        day: "numeric",
+      }),
+    });
+  }
+  return emptyData;
+}
+
+/**
+ * Busca Pull Requests (usando API de search)
+ */
+export async function getPullRequests(days = 30) {
+  try {
+    const since = new Date();
+    since.setDate(since.getDate() - days);
+    const sinceStr = since.toISOString().split("T")[0];
+
+    // Busca PRs criados pelo usuário
+    const response = await fetch(
+      `${GITHUB_API}/search/issues?q=author:${GITHUB_USERNAME}+type:pr+created:>=${sinceStr}&per_page=100`,
+      {
+        headers: {
+          Accept: "application/vnd.github.v3+json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(`GitHub API error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const prs = result.items || [];
+
+    return {
+      total: prs.length,
+      open: prs.filter((pr) => pr.state === "open").length,
+      closed: prs.filter((pr) => pr.state === "closed").length,
+      merged: prs.filter((pr) => pr.pull_request?.merged_at).length,
+      prs: prs.map((pr) => ({
+        title: pr.title,
+        state: pr.state,
+        createdAt: pr.created_at,
+        url: pr.html_url,
+      })),
+    };
+  } catch (error) {
+    console.error("[GitHub] Erro ao buscar PRs:", error);
+    return {
+      total: 0,
+      open: 0,
+      closed: 0,
+      merged: 0,
+      prs: [],
+    };
+  }
+}
+
+/**
+ * Calcula streak de commits (dias consecutivos)
+ * CORRIGIDO: Aplica offset GMT-3 antes de calcular
+ */
+export async function getCommitStreak() {
+  try {
+    const repos = await getRepositories();
+
+    if (repos.length === 0) return 0;
+
+    // Limita a 10 repos mais recentes
+    const recentRepos = repos
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .slice(0, 10);
+
+    // Busca commits dos últimos 90 dias
+    const commitsPromises = recentRepos.map((repo) =>
+      getRepoCommits(repo.fullName, 90),
+    );
+
+    const commitsArrays = await Promise.all(commitsPromises);
+    const allCommits = commitsArrays.flat();
+
+    if (allCommits.length === 0) return 0;
+
+    // Agrupa commits por data (aplicando offset GMT-3)
+    const commitDates = new Set();
+    allCommits.forEach((commit) => {
+      // Pega data UTC
+      const dateUTC = new Date(commit.commit.author.date);
+
+      // Aplica offset de -3h
+      const dateBR = new Date(dateUTC.getTime() - 3 * 60 * 60 * 1000);
+
+      // Extrai apenas a data
+      const dateStr = dateBR.toISOString().split("T")[0];
+      commitDates.add(dateStr);
+    });
+
+    // Ordena datas (mais recente primeiro)
+    const sortedDates = Array.from(commitDates).sort((a, b) =>
+      b.localeCompare(a),
+    );
+
+    if (sortedDates.length === 0) return 0;
+
+    // Calcula streak
+    let streak = 1;
+    let currentDate = new Date(sortedDates[0]);
+
+    for (let i = 1; i < sortedDates.length; i++) {
+      const prevDate = new Date(sortedDates[i]);
+      const diffDays = Math.floor(
+        (currentDate - prevDate) / (1000 * 60 * 60 * 24),
+      );
+
+      if (diffDays === 1) {
+        streak++;
+        currentDate = prevDate;
+      } else if (diffDays > 1) {
+        break;
+      }
+    }
+
+    return streak;
+  } catch (error) {
+    console.error("[GitHub] Erro ao calcular streak:", error);
+    return 0;
   }
 }
 
@@ -134,7 +354,7 @@ export async function getGitHubStats(days = 7) {
   try {
     const [commits, prs, repos] = await Promise.all([
       countCommits(days),
-      getPullRequests(30), // PRs dos últimos 30 dias
+      getPullRequests(30),
       getRepositories(),
     ]);
 
@@ -190,81 +410,4 @@ function getTopLanguages(repos) {
       count,
       percentage: ((count / repos.length) * 100).toFixed(1),
     }));
-}
-
-/**
- * Busca streak de commits (dias consecutivos)
- */
-export async function getCommitStreak() {
-  const events = await getGitHubEvents(90); // Últimos 90 dias
-
-  const pushEvents = events.filter((e) => e.type === "PushEvent");
-
-  // Agrupa por data
-  const commitDates = new Set();
-  pushEvents.forEach((event) => {
-    const date = new Date(event.created_at).toISOString().split("T")[0];
-    commitDates.add(date);
-  });
-
-  // Ordena datas (mais recente primeiro)
-  const sortedDates = Array.from(commitDates).sort((a, b) =>
-    b.localeCompare(a),
-  );
-
-  if (sortedDates.length === 0) return 0;
-
-  // Calcula streak
-  let streak = 1;
-  let currentDate = new Date(sortedDates[0]);
-
-  for (let i = 1; i < sortedDates.length; i++) {
-    const prevDate = new Date(sortedDates[i]);
-    const diffDays = Math.floor(
-      (currentDate - prevDate) / (1000 * 60 * 60 * 24),
-    );
-
-    if (diffDays === 1) {
-      streak++;
-      currentDate = prevDate;
-    } else if (diffDays > 1) {
-      break;
-    }
-  }
-
-  return streak;
-}
-
-/**
- * Gera dados para gráfico de commits (últimos 7 dias)
- */
-export async function getCommitsChartData(days = 7) {
-  const events = await getGitHubEvents(days);
-  const pushEvents = events.filter((e) => e.type === "PushEvent");
-
-  // Cria array de últimos N dias
-  const chartData = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split("T")[0];
-
-    const commitsOnDate = pushEvents
-      .filter((event) => {
-        const eventDate = event.created_at.split("T")[0];
-        return eventDate === dateStr;
-      })
-      .reduce((sum, event) => sum + (event.payload.commits?.length || 0), 0);
-
-    chartData.push({
-      date: dateStr,
-      commits: commitsOnDate,
-      label: date.toLocaleDateString("pt-BR", {
-        weekday: "short",
-        day: "numeric",
-      }),
-    });
-  }
-
-  return chartData;
 }
