@@ -3,6 +3,7 @@
 // OTIMIZADO: Usa cache global para reduzir chamadas ao Notion
 // ATUALIZADO: Inclui OKRs automáticos do Notion
 // CORRIGIDO: Contadores baseados em Progress, não em Status
+// NOVO: Integração automática com GitHub API para KPIs
 
 import {
   getTodayTasks,
@@ -11,7 +12,7 @@ import {
   getTaskPanel,
   getActiveProjects,
   getRoadmap,
-  getOKRsWithKeyResults, // NOVO!
+  getOKRsWithKeyResults,
 } from "../../lib/notion";
 
 import {
@@ -20,6 +21,8 @@ import {
   groupByCategory,
   calculateWeeklyProgress,
 } from "../../lib/kpis";
+
+import { countCommits, getPullRequests } from "../../lib/github";
 
 import cache from "../../lib/cache";
 
@@ -56,13 +59,13 @@ export default async function handler(req, res) {
     }
 
     // ========================================
-    // ETAPA 2: CACHE VAZIO - BUSCAR DO NOTION
+    // ETAPA 2: CACHE VAZIO - BUSCAR DADOS
     // ========================================
-    console.log("[API] 🔍 Cache vazio, buscando do Notion...");
+    console.log("[API] 🔍 Cache vazio, buscando dados do Notion e GitHub...");
     const startTime = Date.now();
 
-    // Busca todos os dados do Notion em paralelo
-    // AGORA INCLUI OKRs! 🎉
+    // Busca todos os dados em paralelo
+    // NOVO: Inclui dados do GitHub!
     const [
       todayTasks,
       hoursWeek,
@@ -70,7 +73,9 @@ export default async function handler(req, res) {
       taskPanel,
       activeProjects,
       roadmap,
-      okrsData, // NOVO!
+      okrsData,
+      githubCommits,
+      githubPRs,
     ] = await Promise.all([
       getTodayTasks(),
       getHoursThisWeek(),
@@ -78,7 +83,9 @@ export default async function handler(req, res) {
       getTaskPanel(),
       getActiveProjects(),
       getRoadmap(),
-      getOKRsWithKeyResults(CURRENT_QUARTER), // NOVO!
+      getOKRsWithKeyResults(CURRENT_QUARTER),
+      countCommits(7), // Commits dos últimos 7 dias
+      getPullRequests(30), // PRs dos últimos 30 dias
     ]);
 
     // Filtra dados da semana atual
@@ -86,6 +93,60 @@ export default async function handler(req, res) {
 
     // Calcula todos os KPIs
     const kpis = calculateAllKPIs(hoursWeek, currentWeekTracker, taskPanel);
+
+    // ========================================
+    // NOVO: ATUALIZA KPIs COM DADOS DO GITHUB
+    // ========================================
+
+    // KPI: Commits GitHub (sobrescreve valor do Notion)
+    kpis.practice.commits = {
+      value: githubCommits.total,
+      target: { min: 20, max: 30 },
+      status: getGitHubKPIStatus(githubCommits.total, 20, 30),
+    };
+
+    // KPI: PRs Criados (sobrescreve valor do Notion)
+    kpis.practice.prs = {
+      value: githubPRs.total,
+      target: { min: 2, max: 4 },
+      status: getGitHubKPIStatus(githubPRs.total, 2, 4),
+    };
+
+    // Recalcula summary com os novos valores
+    kpis.summary = {
+      total: 15,
+      success: countByStatus(
+        {
+          ...kpis.productivity,
+          ...kpis.practice,
+          ...kpis.learning,
+          ...kpis.language,
+        },
+        "success",
+      ),
+      warning: countByStatus(
+        {
+          ...kpis.productivity,
+          ...kpis.practice,
+          ...kpis.learning,
+          ...kpis.language,
+        },
+        "warning",
+      ),
+      danger: countByStatus(
+        {
+          ...kpis.productivity,
+          ...kpis.practice,
+          ...kpis.learning,
+          ...kpis.language,
+        },
+        "danger",
+      ),
+    };
+
+    // ========================================
+    // CONTINUA COM O RESTO DOS DADOS
+    // ========================================
 
     // Agrupa horas por categoria para gráficos
     const categoryBreakdown = groupByCategory(hoursWeek);
@@ -107,11 +168,6 @@ export default async function handler(req, res) {
       streak: kpis.productivity.streak.value,
     };
 
-    // ========================================
-    // NOVO: PROCESSAR OKRs
-    // CORRIGIDO: Contadores baseados em Progress!
-    // ========================================
-
     // Calcula estatísticas gerais dos OKRs
     const totalOKRs = okrsData.length;
     const totalKRs = okrsData.reduce((sum, okr) => sum + okr.totalKRs, 0);
@@ -126,7 +182,6 @@ export default async function handler(req, res) {
     // Conta KRs por PROGRESS (não por status!)
     const allKRs = okrsData.flatMap((okr) => okr.keyResults);
 
-    // CORRIGIDO: Baseado em Progress
     const completedKRs = allKRs.filter((kr) => kr.progress >= 100).length;
     const inProgressKRs = allKRs.filter(
       (kr) => kr.progress > 0 && kr.progress < 100,
@@ -139,13 +194,13 @@ export default async function handler(req, res) {
       avgProgress,
       completedKRs,
       inProgressKRs,
-      notStartedKRs, // NOVO: Não iniciados
+      notStartedKRs,
       quarter: CURRENT_QUARTER,
     };
 
     // Monta o objeto de resposta
     const responseData = {
-      // KPIs calculados
+      // KPIs calculados (AGORA COM GITHUB!)
       kpis,
 
       // Dados brutos
@@ -156,9 +211,15 @@ export default async function handler(req, res) {
       activeProjects,
       roadmap,
 
-      // NOVO: OKRs
+      // OKRs
       okrs: okrsData,
       okrsSummary,
+
+      // NOVO: Dados do GitHub
+      github: {
+        commits: githubCommits,
+        prs: githubPRs,
+      },
 
       // Dados processados
       categoryBreakdown,
@@ -173,7 +234,7 @@ export default async function handler(req, res) {
 
     const elapsedTime = Date.now() - startTime;
     console.log(
-      `[API] ✅ Dados buscados do Notion em ${elapsedTime}ms e salvos no cache`,
+      `[API] ✅ Dados buscados em ${elapsedTime}ms e salvos no cache`,
     );
 
     // Retorna os dados
@@ -189,8 +250,28 @@ export default async function handler(req, res) {
 
     res.status(500).json({
       success: false,
-      error: "Erro ao buscar dados do Notion",
+      error: "Erro ao buscar dados",
       message: error.message,
     });
   }
+}
+
+// ========================================
+// FUNÇÕES AUXILIARES
+// ========================================
+
+/**
+ * Determina status do KPI GitHub baseado no valor e metas
+ */
+function getGitHubKPIStatus(value, min, max) {
+  if (value >= min && value <= max) return "success"; // 🟢
+  if (value >= min * 0.8) return "warning"; // 🟡
+  return "danger"; // 🔴
+}
+
+/**
+ * Conta quantos KPIs estão em determinado status
+ */
+function countByStatus(kpis, status) {
+  return Object.values(kpis).filter((kpi) => kpi.status === status).length;
 }
