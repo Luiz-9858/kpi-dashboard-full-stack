@@ -3,7 +3,7 @@
 // Correção de fuso horário GMT-3 (Brasil) - SIMPLIFICADO
 // Username: Luiz-9858
 
-const GITHUB_USERNAME = "Luiz-9858";
+const GITHUB_USERNAME = process.env.GITHUB_USERNAME || "Luiz-9858";
 const GITHUB_API = "https://api.github.com";
 
 /**
