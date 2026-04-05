@@ -498,6 +498,7 @@ O projeto é compatível com:
 - 🔮 **API Pública**: Endpoints para consumo externo
 - 🔮 **Progressive Web App** (PWA)
 - 🔮 **App Mobile**: React Native (iOS/Android)
+- 🔮 Test webhook
 
 ---
 
