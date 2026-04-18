@@ -7,11 +7,13 @@ Esta documentação descreve todas as rotas da API REST do dashboard.
 ## 🌐 Base URL
 
 **Desenvolvimento:**
+
 ```
 http://localhost:3000/api
 ```
 
 **Produção:**
+
 ```
 https://seu-dominio.vercel.app/api
 ```
@@ -31,6 +33,7 @@ GET /api/dashboard
 ```
 
 **Headers:**
+
 ```
 Content-Type: application/json
 ```
@@ -240,15 +243,16 @@ Content-Type: application/json
 
 #### Códigos de Status
 
-| Código | Descrição |
-|--------|-----------|
-| `200` | Sucesso - Dados retornados |
-| `500` | Erro no servidor - Problema ao buscar dados do Notion |
-| `503` | Serviço indisponível - Notion fora do ar |
+| Código | Descrição                                             |
+| ------ | ----------------------------------------------------- |
+| `200`  | Sucesso - Dados retornados                            |
+| `500`  | Erro no servidor - Problema ao buscar dados do Notion |
+| `503`  | Serviço indisponível - Notion fora do ar              |
 
 #### Erros Possíveis
 
 **500 Internal Server Error:**
+
 ```json
 {
   "success": false,
@@ -258,6 +262,7 @@ Content-Type: application/json
 ```
 
 **Causas comuns:**
+
 - Token do Notion inválido
 - Database ID incorreto
 - Database não compartilhada com Integration
@@ -272,21 +277,21 @@ Content-Type: application/json
 ```javascript
 async function getDashboardData() {
   try {
-    const response = await fetch('/api/dashboard');
-    
+    const response = await fetch("/api/dashboard");
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
-    
+
     const result = await response.json();
-    
+
     if (result.success) {
       return result.data;
     } else {
       throw new Error(result.error);
     }
   } catch (error) {
-    console.error('Erro:', error);
+    console.error("Erro:", error);
     return null;
   }
 }
@@ -295,7 +300,7 @@ async function getDashboardData() {
 ### Usando hook customizado:
 
 ```javascript
-import { useDashboard } from '@/hooks/useDashboard';
+import { useDashboard } from "@/hooks/useDashboard";
 
 function MyComponent() {
   const { data, loading, error, refresh } = useDashboard();
@@ -332,6 +337,7 @@ Cada KPI tem a estrutura:
 ```
 
 **Status:**
+
 - `success` 🟢 - Dentro da meta
 - `warning` 🟡 - Próximo da meta (80%+)
 - `danger` 🔴 - Abaixo da meta
@@ -368,16 +374,19 @@ Cada KPI tem a estrutura:
 ### Cache
 
 A API não implementa cache próprio. O cache é gerenciado no frontend via:
+
 - LocalStorage (5 minutos)
 - Hook `useDashboard` com opção `enableCache`
 
 ### Rate Limits
 
 **Notion API:**
+
 - 3 requisições por segundo
 - Implementamos batching automático
 
 **Dashboard API:**
+
 - Sem rate limit (localhost)
 - Vercel: Dependente do plano
 
@@ -394,12 +403,14 @@ A API não implementa cache próprio. O cache é gerenciado no frontend via:
 ### Variáveis de Ambiente
 
 **Nunca exponha:**
+
 - `NOTION_API_KEY` - Apenas server-side
 - `NOTION_DB_*` - Database IDs apenas server-side
 
 ### CORS
 
 API aceita requisições apenas de:
+
 - Same origin (localhost:3000)
 - Domínio de produção configurado na Vercel
 
@@ -409,7 +420,7 @@ Considere implementar rate limiting em produção:
 
 ```javascript
 // Exemplo com biblioteca 'express-rate-limit'
-import rateLimit from 'express-rate-limit';
+import rateLimit from "express-rate-limit";
 
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minuto
@@ -439,6 +450,7 @@ curl http://localhost:3000/api/dashboard
 ### Browser
 
 Acesse diretamente:
+
 ```
 http://localhost:3000/api/dashboard
 ```
@@ -452,28 +464,34 @@ Verá o JSON no navegador.
 ### Endpoints planejados:
 
 **GET `/api/kpis/:category`**
+
 - Retorna KPIs de uma categoria específica
 - Ex: `/api/kpis/productivity`
 
 **GET `/api/okrs`**
+
 - Retorna OKRs e progresso
 - Calcula % de conclusão de cada Key Result
 
 **GET `/api/projects/:id`**
+
 - Detalhes de projeto específico
 - Histórico de commits
 - Timeline
 
 **GET `/api/weekly-report`**
+
 - Relatório semanal completo
 - Comparação com semana anterior
 - Insights automáticos
 
 **POST `/api/refresh`**
+
 - Força atualização do cache
 - Útil para webhooks
 
 **GET `/api/health`**
+
 - Health check da API
 - Status da conexão Notion
 - Versão da API
@@ -490,7 +508,7 @@ Verá o JSON no navegador.
 
 ## 🐛 Reportar Problemas
 
-Se encontrar bugs na API:
+Se encontrar bugs na API, passos:
 
 1. Verifique logs do servidor (terminal)
 2. Verifique console do navegador (F12)
