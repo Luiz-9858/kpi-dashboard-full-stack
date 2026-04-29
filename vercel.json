@@ -1,7 +1,31 @@
 {
-  "buildCommand": "cd frontend && npm run build",
-  "devCommand": "cd frontend && npm run dev",
-  "installCommand": "cd frontend && npm install",
-  "framework": "nextjs",
-  "outputDirectory": "frontend/.next"
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/manifest.json",
+      "dest": "/manifest.json"
+    },
+    {
+      "src": "/sw.js",
+      "dest": "/sw.js"
+    },
+    {
+      "src": "/workbox-(.*).js",
+      "dest": "/workbox-.js"
+    },
+    {
+      "src": "/icon-(.*).png",
+      "dest": "/icon-.png"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/"
+    }
+  ]
 }
