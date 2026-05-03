@@ -1,10 +1,12 @@
 # 📊 KPI Dashboard Full Stack
 
-> Dashboard personalizado integrado com Notion API para visualização de KPIs, OKRs e acompanhamento de progresso como desenvolvedor Full Stack
+> Dashboard personalizado integrado com Notion API e GitHub API para visualização de KPIs, OKRs e acompanhamento de progresso como desenvolvedor Full Stack
 
 [![Deploy on Vercel](https://img.shields.io/badge/Vercel-Deploy-black?style=for-the-badge&logo=vercel)](https://kpi-dashboard-full-stack.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![Notion API](https://img.shields.io/badge/Notion-API-black?style=for-the-badge&logo=notion)](https://developers.notion.com/)
+[![GitHub API](https://img.shields.io/badge/GitHub-API-black?style=for-the-badge&logo=github)](https://docs.github.com/en/rest)
+[![PWA](https://img.shields.io/badge/PWA-Enabled-purple?style=for-the-badge&logo=pwa)](https://web.dev/progressive-web-apps/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 **🔗 Demo ao vivo:** [kpi-dashboard-full-stack.vercel.app](https://kpi-dashboard-full-stack.vercel.app)
@@ -15,19 +17,47 @@
 
 ## 📊 Visão Geral
 
-Sistema completo de tracking de progresso para desenvolvedores, integrando automaticamente com o Notion para extrair dados de tarefas, horas de estudo, projetos e gerar visualizações em tempo real.
+Sistema completo de tracking de progresso para desenvolvedores, integrando automaticamente com o **Notion** e **GitHub** para extrair dados de tarefas, horas de estudo, commits, pull requests e gerar visualizações em tempo real.
 
 ### ✨ Funcionalidades Principais
+
+**Dashboards & Visualização:**
 
 - 📈 **Dashboard Principal** - Estatísticas da semana, tasks completadas, streak de dias consecutivos
 - 🎯 **15 KPIs Automáticos** - Organizados em 4 categorias (Produtividade, Prática, Aprendizado, Idioma)
 - 🚀 **OKRs Q1 2026** - 4 objetivos trimestrais com 16 Key Results
 - 📁 **Projetos Ativos** - Acompanhamento de 7 projetos em andamento
 - 📊 **Gráficos Interativos** - Distribuição de tempo, progresso semanal, tendências
-- 🌓 **Dark/Light Mode** - Tema escuro por padrão
+- 🎨 **Sistema de Animações** - 60+ animações CSS customizadas
+
+**Integrações:**
+
+- 🔗 **Notion API** - 7 databases sincronizadas automaticamente
+- 🐙 **GitHub API** - Commits, PRs, repositórios e linguagens em tempo real
+- ⚡ **GitHub Webhook** - Atualização instantânea quando você commita
+- 📡 **Cache Inteligente** - 10 minutos em memória para performance
+
+**Relatórios & Insights:**
+
+- 📊 **Análise Semanal Automática** - Score de produtividade (0-100)
+- 💡 **Recomendações Inteligentes** - Baseadas nos seus KPIs
+- 🏆 **Conquistas** - Sistema de badges e progresso
+- ⚠️ **Avisos** - Quando KPIs ficam abaixo da meta
+
+**PWA (Progressive Web App):**
+
+- 📱 **Instalável** - Desktop (Windows/Mac/Linux) e Mobile (Android/iOS)
+- 🔄 **Funciona Offline** - Service worker com cache inteligente
+- ⚡ **Performance** - Cache de API (24h) e imagens (30 dias)
+- 🎯 **Shortcuts** - 4 atalhos rápidos (Dashboard, KPIs, GitHub, Relatórios)
+- 🎨 **Ícones Personalizados** - Logo "K" azul/roxo (192x192 e 512x512)
+
+**Experiência:**
+
+- 🌓 **Dark/Light Mode** - Tema escuro por padrão com toggle
 - 📱 **100% Responsivo** - Mobile, tablet e desktop
 - 🔥 **Heatmap GitHub Style** - Visualização de dias de estudo
-- ⚡ **Atualização Automática** - Sincronização em tempo real com Notion
+- ⚡ **Atualização em Tempo Real** - Webhook do GitHub
 
 ---
 
@@ -46,7 +76,7 @@ Sistema completo de tracking de progresso para desenvolvedores, integrando autom
 
 **Key Results:**
 
-- 📚 Curso HashTag: 37% → 100% - **45%**
+- 📚 Curso HashTag: HTML & CSS Impressionador 61% → 100% - **39%**
 - 🧮 Resolver 120 exercícios de algoritmos - **25%**
 - 🛠️ Criar 1 projeto pessoal do zero - **50%**
 - 🤝 Contribuir com 3 pull requests open source - **0%**
@@ -86,13 +116,13 @@ Sistema completo de tracking de progresso para desenvolvedores, integrando autom
 
 ### 💻 Prática (5 KPIs)
 
-| #   | KPI                  | Meta Semanal | Meta Mensal  | Medição                       |
-| --- | -------------------- | ------------ | ------------ | ----------------------------- |
-| 7   | Commits GitHub       | 20-30        | 80-120       | GitHub API (futuro)           |
-| 8   | Features Concluídas  | 3-5          | 12-20        | Task Panel (status: Complete) |
-| 9   | Bugs Resolvidos      | 5-8          | 20-32        | Task Panel (tag: bug)         |
-| 10  | Pull Requests        | -            | 2-4          | GitHub API (futuro)           |
-| 11  | Projetos Finalizados | -            | Trimestre: 2 | Task Panel (progress: 100%)   |
+| #   | KPI                  | Meta Semanal | Meta Mensal  | Medição                        |
+| --- | -------------------- | ------------ | ------------ | ------------------------------ |
+| 7   | Commits GitHub       | 20-30        | 80-120       | ✅ **GitHub API (automático)** |
+| 8   | Features Concluídas  | 3-5          | 12-20        | Task Panel (status: Complete)  |
+| 9   | Bugs Resolvidos      | 5-8          | 20-32        | Task Panel (tag: bug)          |
+| 10  | Pull Requests        | -            | 2-4          | ✅ **GitHub API (automático)** |
+| 11  | Projetos Finalizados | -            | Trimestre: 2 | Task Panel (progress: 100%)    |
 
 ### 📚 Aprendizado (3 KPIs)
 
@@ -110,6 +140,35 @@ Sistema completo de tracking de progresso para desenvolvedores, integrando autom
 | 16  | Worksheets           | 2            | 8           | Hour Tracker (atividade: "worksheet") |
 
 **Status:** 🟢 Ótimo (≥90%) | 🟡 Atenção (70-89%) | 🔴 Crítico (<70%)
+
+---
+
+## 🐙 Integração GitHub
+
+### Dados Automáticos
+
+- ✅ **Commits dos últimos 7 dias** - Com correção de fuso horário GMT-3
+- ✅ **Pull Requests** - Total, abertos, merged (30 dias)
+- ✅ **Repositórios** - Total e ativos (atualizados nos últimos 30 dias)
+- ✅ **Streak** - Dias consecutivos com commits
+- ✅ **Linguagens** - Top 5 mais usadas com porcentagem
+- ✅ **Gráfico de Commits** - Barras dos últimos 7 dias
+
+### Webhook em Tempo Real
+
+- ⚡ **Atualização instantânea** quando você faz commit
+- 🔐 **Validação HMAC SHA256** para segurança
+- 🗑️ **Invalidação automática de cache**
+- 📊 **Logs detalhados** de cada evento (push, PR, create, delete)
+
+### Página /github
+
+Visualização completa com:
+
+- Cards de estatísticas (commits, PRs, repos, streak)
+- Gráfico de commits dos últimos 7 dias
+- Lista de repositórios recentes
+- Top 5 linguagens mais usadas
 
 ---
 
@@ -139,10 +198,11 @@ Sistema completo de tracking de progresso para desenvolvedores, integrando autom
 ### Frontend
 
 - **Framework**: Next.js 14.2 (React 18)
-- **Estilização**: Tailwind CSS
+- **Estilização**: Tailwind CSS + animations.css (60+ animações)
 - **Gráficos**: Recharts
 - **Ícones**: Lucide React
 - **Datas**: date-fns
+- **PWA**: next-pwa
 - **HTTP**: Fetch API
 
 ### Backend & API
@@ -150,7 +210,9 @@ Sistema completo de tracking de progresso para desenvolvedores, integrando autom
 - **Runtime**: Node.js 20+
 - **API Routes**: Next.js Serverless Functions
 - **Notion SDK**: @notionhq/client
-- **Cache**: Em memória (5 minutos)
+- **GitHub API**: REST API v3
+- **Cache**: Em memória (10 minutos)
+- **Webhook**: HMAC SHA256 validation
 
 ### Deploy & Infraestrutura
 
@@ -158,39 +220,63 @@ Sistema completo de tracking de progresso para desenvolvedores, integrando autom
 - **CI/CD**: GitHub Actions (automático)
 - **Variáveis de Ambiente**: Vercel Environment Variables
 - **HTTPS**: Incluído (Vercel)
+- **Webhook**: Configurado e ativo
 
 ---
 
 ## 📁 Estrutura do Projeto
 
 ```
-frontend/
-├── src/
-│   ├── components/           # Componentes React
-│   │   ├── Header.js        # Cabeçalho e navegação
-│   │   ├── StatsCard.js     # Cards de estatísticas
-│   │   ├── KPICard.js       # Cards de KPIs
-│   │   ├── Charts.js        # Gráficos (Recharts)
-│   │   └── Loading.js       # Estados de loading/error
-│   ├── lib/                 # Lógica de negócio
-│   │   ├── notion.js        # Conexão Notion API
-│   │   ├── kpis.js          # Cálculo de KPIs
-│   │   ├── constants.js     # OKRs e constantes
-│   │   └── utils.js         # Funções utilitárias
-│   ├── pages/               # Páginas Next.js
-│   │   ├── index.js         # Dashboard principal
-│   │   ├── kpis.js          # Página de KPIs
-│   │   ├── okrs.js          # Página de OKRs
-│   │   ├── projetos.js      # Página de Projetos
-│   │   └── api/
-│   │       └── dashboard.js # API endpoint
-│   └── styles/
-│       └── globals.css      # Estilos globais
-├── public/                  # Assets estáticos
-├── .env.local              # Variáveis de ambiente (não commitado)
-├── .gitignore
-├── package.json
-└── README.md               # Este arquivo
+kpi-dashboard-full-stack/
+├── frontend/
+│   ├── src/
+│   │   ├── components/           # Componentes React
+│   │   │   ├── Header.js        # Header com dark mode
+│   │   │   ├── StatsCard.js     # Cards com sparkline
+│   │   │   ├── KPICard.js       # Cards de KPIs
+│   │   │   ├── Charts.js        # Recharts básicos
+│   │   │   ├── AdvancedCharts.js # Charts avançados
+│   │   │   ├── InsightCard.js   # Cards de insights
+│   │   │   └── Loading.js       # Estados de loading
+│   │   ├── lib/                 # Lógica de negócio
+│   │   │   ├── notion.js        # Conexão Notion API
+│   │   │   ├── github.js        # ✨ Conexão GitHub API
+│   │   │   ├── kpis.js          # Cálculo de KPIs
+│   │   │   ├── insights.js      # ✨ Análise e insights
+│   │   │   ├── cache.js         # ✨ Cache em memória
+│   │   │   ├── constants.js     # OKRs e constantes
+│   │   │   └── utils.js         # Funções utilitárias
+│   │   ├── pages/               # Páginas Next.js
+│   │   │   ├── index.js         # Dashboard principal
+│   │   │   ├── kpis.js          # Página de KPIs
+│   │   │   ├── okrs.js          # Página de OKRs
+│   │   │   ├── projetos.js      # Página de Projetos
+│   │   │   ├── github.js        # ✨ Página GitHub
+│   │   │   ├── relatorios.js    # ✨ Página Relatórios
+│   │   │   └── api/
+│   │   │       ├── dashboard.js # API endpoint
+│   │   │       ├── github.js    # ✨ API GitHub
+│   │   │       └── webhook/
+│   │   │           └── github.js # ✨ Webhook GitHub
+│   │   ├── styles/
+│   │   │   ├── globals.css      # Estilos globais
+│   │   │   └── animations.css   # ✨ 60+ animações
+│   │   └── hooks/
+│   │       └── useDarkMode.js   # Hook de dark mode
+│   ├── public/
+│   │   ├── manifest.json        # ✨ PWA manifest
+│   │   ├── icon-192x192.png     # ✨ Ícone PWA
+│   │   ├── icon-512x512.png     # ✨ Ícone PWA
+│   │   └── sw.js                # ✨ Service Worker
+│   ├── .env.local               # Variáveis de ambiente
+│   ├── next.config.js           # ✨ Config Next.js + PWA
+│   └── package.json
+├── vercel.json                  # ✨ Config Vercel
+├── README.md                    # Este arquivo
+├── CHANGELOG.md                 # ✨ Histórico de versões
+└── ESTADO-PROJETO.md            # ✨ Estado atual
+
+✨ = Novos na v1.5.0
 ```
 
 ---
@@ -202,6 +288,7 @@ frontend/
 - Node.js 18+ instalado
 - Conta no Notion com workspace configurado
 - Integração Notion criada ([Como criar](https://developers.notion.com/docs/create-a-notion-integration))
+- Conta no GitHub (para integração)
 - Git instalado
 
 ### Instalação
@@ -235,6 +322,12 @@ NOTION_DB_HOUR_TRACKER=id_da_database
 NOTION_DB_TASK_PANEL=id_da_database
 NOTION_DB_ACTIVE_PROJECTS=id_da_database
 NOTION_DB_ROADMAP=id_da_database
+NOTION_DB_OKRS=id_da_database
+NOTION_DB_KEY_RESULTS=id_da_database
+
+# GitHub (Opcional para desenvolvimento local)
+GITHUB_USERNAME=seu_usuario_github
+GITHUB_WEBHOOK_SECRET=seu_secret_webhook
 ```
 
 **4. Execute o servidor de desenvolvimento**
@@ -251,126 +344,79 @@ http://localhost:3000
 
 ---
 
+## 📱 Instalar como PWA
+
+### Desktop (Windows/Mac/Linux)
+
+**Chrome/Edge:**
+
+1. Abra `https://kpi-dashboard-full-stack.vercel.app`
+2. Procure ícone de instalação na barra de endereço
+3. Clique em "Instalar"
+4. App abre em janela própria!
+
+### Mobile
+
+**Android (Chrome):**
+
+1. Abra o site
+2. Menu → "Instalar app" ou "Adicionar à tela inicial"
+3. Confirmar
+4. Ícone "K" aparece na tela inicial!
+
+**iOS (Safari):**
+
+1. Abra o site
+2. Compartilhar → "Adicionar à Tela de Início"
+3. Confirmar
+4. Ícone "K" aparece na tela inicial!
+
+---
+
+## 🐙 Configurar Webhook GitHub
+
+### 1. No Vercel
+
+**Settings → Environment Variables:**
+
+```
+GITHUB_WEBHOOK_SECRET=seu-secret-aqui
+```
+
+### 2. No GitHub
+
+**Repositório → Settings → Webhooks → Add webhook:**
+
+```
+Payload URL: https://kpi-dashboard-full-stack.vercel.app/api/webhook/github
+Content type: application/json
+Secret: mesmo-secret-do-vercel
+Events: Push, Pull requests, Create, Delete
+Active: ✅
+```
+
+### 3. Testar
+
+Faça um commit e veja os logs no Vercel!
+
+---
+
 ## 🔧 Configuração do Notion
 
 ### Databases Necessárias
 
-O dashboard requer **6 databases** no Notion:
+O dashboard requer **7 databases** no Notion:
 
-#### 1. **Today's Tasks** - Tarefas do dia
+1. **Today's Tasks** - Tarefas do dia
+2. **Hours This Week** - Horas planejadas vs reais
+3. **Hour Tracker** - Registro histórico de horas
+4. **Task Panel** - Painel geral de tarefas
+5. **Active Projects** - Projetos em andamento
+6. **12-Month Roadmap** - Roadmap anual
+7. **OKRs** - Objetivos trimestrais
+8. **Key Results** - Resultados-chave
 
-**Propriedades:**
-
-- `Name` (título) - Nome da task
-- `Priority Level` (select) - 🔴 Alta / 🟡 Média / 🟢 Baixa
-- `Estimated Time` (number) - Horas estimadas
-- `Status` (status) - A Fazer / Fazendo / Concluído
-- `Description` (rich_text) - Descrição
-
-#### 2. **Hours This Week** - Horas planejadas vs reais
-
-**Propriedades:**
-
-- `Time dedicated during the week🤖` (título)
-- `Category` (select) - 🔵 Estudos / 🟣 Projetos / 🟠 Idiomas / 🟢 Desenvolvimento Pessoal
-- `Horas Plan.` (number) - Horas planejadas
-- `Horas Real.` (number) - Horas realizadas
-- `Status` (status) - Estado atual
-- `Description` (url) - Link relacionado
-
-#### 3. **Hour Tracker** - Registro histórico de horas
-
-**Propriedades:**
-
-- `📝 Prohibited` (título) - Nome
-- `📋 Activity` (rich_text) - Atividade realizada
-- `📅 Date` (date) - Data do registro
-- `⏱️ Hours` (number) - Horas gastas
-- `📂 Category` (select) - Categoria
-- `💼 Project` (select) - Projeto relacionado
-- `📌 Notas` (rich_text) - Observações
-
-#### 4. **Task Panel** - Painel geral de tarefas
-
-**Propriedades:**
-
-- `Task` (título) - Nome da task
-- `Category` (select) - Categoria
-- `Priority` (select) - Prioridade
-- `Status` (select) - Status
-- `Estimated Time` (number) - Tempo estimado
-- `Real Time` (number) - Tempo real
-- `Progress` (select) - Porcentagem (0%, 25%, 50%, 75%, 100%)
-
-#### 5. **Active Projects** - Projetos em andamento
-
-**Propriedades:**
-
-- `Projetos Ativos (4-8 meses)` (título) - Nome do projeto
-- `Status` (status) - Em desenvolvimento / Em teste / Pausado
-- `Prioridade` (select) - 🔴 Urgente / 🟠 Alta / 🟡 Média / 🟢 Baixa
-- `Progresso` (select) - 🔴 0-25% / 🟡 25-50% / 🟠 50-75% / 🟢 75-100%
-- `Categoria` (select) - Tipo do projeto
-
-#### 6. **12-Month Roadmap** - Roadmap anual
-
-**Propriedades:**
-
-- `Projetos do ano de 2026` (título)
-- `Date` (date) - Data/deadline
-- `Categoria` (select) - Área
-- `Status` (select) - Estado
-- `Prioridade` (select) - Prioridade
-- `Descrição` (rich_text) - Detalhes
-
-### Obter Database IDs
-
-1. Abra a database no Notion
-2. Clique em "Share" → "Copy link"
-3. O ID está na URL:
-
-```
-https://notion.so/workspace/DATABASE_ID?v=...
-                          ^^^^^^^^^^^^^^^^
-```
-
-### Compartilhar com a Integração
-
-Para cada database:
-
-1. Clique em `•••` (menu)
-2. "Add connections"
-3. Selecione sua integração
-4. ✅ Confirm
-
----
-
-## 🎨 Features Técnicas
-
-### Performance
-
-- ⚡ **Server-Side Rendering** (SSR) com Next.js
-- 🔄 **Cache de 5 minutos** para reduzir chamadas à API
-- 📦 **Code splitting** automático
-- 🖼️ **Lazy loading** de componentes pesados
-- 🚀 **Otimização de build** com Vercel
-
-### UX/UI
-
-- 🌓 **Dark mode** por padrão (toggle no header)
-- 📱 **Design 100% responsivo** (mobile-first)
-- ⌨️ **Acessibilidade** (ARIA labels)
-- 🎯 **Loading states** elegantes
-- ❌ **Error boundaries** para falhas graciosamente
-- 💫 **Animações suaves** com Tailwind
-
-### Segurança
-
-- 🔒 **Variáveis de ambiente** (.env.local)
-- 🚫 **Token nunca exposto** no frontend
-- ✅ **Validação de dados** da API
-- 🛡️ **HTTPS obrigatório** (Vercel)
-- 🔐 **CORS configurado** corretamente
+**Documentação completa:** Veja `NOTION_SETUP.md`
 
 ---
 
@@ -383,6 +429,7 @@ Para cada database:
 - **Gráfico de barras**: Distribuição de tempo (Reais vs Planejadas)
 - **Tasks de Hoje**: Lista das 5 próximas tasks com status
 - **Progresso Semanal**: Barra de progresso com meta 20-23h
+- **Card de Relatórios**: Acesso rápido aos insights semanais
 
 ### 🎯 KPIs Detalhados (`/kpis`)
 
@@ -407,98 +454,86 @@ Para cada database:
 - **Barras de progresso**: Visual por projeto
 - **Categorias**: Diferentes cores por tipo
 
+### 🐙 GitHub (`/github`) - ✨ NOVO
+
+- **Cards de estatísticas**: Commits, PRs, Repos, Streak
+- **Gráfico de commits**: Barras dos últimos 7 dias
+- **Repositórios recentes**: Lista com linguagem e stars
+- **Top linguagens**: Top 5 com porcentagem
+- **Auto-refresh**: A cada 10 minutos
+- **Webhook**: Atualização instantânea ao commitar
+
+### 📊 Relatórios (`/relatorios`) - ✨ NOVO
+
+- **Score de produtividade**: 0-100 com gráfico circular
+- **Resumo semanal**: Horas, commits, tasks, streak
+- **Insights automáticos**: Análise inteligente dos KPIs
+- **Recomendações**: Sugestões personalizadas
+- **Conquistas**: Badges desbloqueados
+- **Avisos**: KPIs que precisam de atenção
+
 ---
 
-## 🔔 Sistema de Notificações (Roadmap)
+## 🎨 Features Técnicas
 
-### Alertas planejados:
+### Performance
 
-- ❌ Horas semanais < 18h
-- ❌ Dias sem estudar > 1
-- ❌ Commits semanais < 15
-- ❌ Features semanais < 2
-- ⚠️ Qualquer KPI abaixo de 80% da meta
+- ⚡ **Server-Side Rendering** (SSR) com Next.js
+- 🔄 **Cache de 10 minutos** para reduzir chamadas à API
+- 📦 **Code splitting** automático
+- 🖼️ **Lazy loading** de componentes pesados
+- 🚀 **Otimização de build** com Vercel
+- 💾 **Service Worker** com cache de 24h para APIs
 
-**Status:** 🔮 Planejado para v1.1
+### UX/UI
 
----
+- 🌓 **Dark mode** por padrão (toggle no header)
+- 📱 **Design 100% responsivo** (mobile-first)
+- ⌨️ **Acessibilidade** (ARIA labels)
+- 🎯 **Loading states** elegantes
+- ❌ **Error boundaries** para falhas graciosamente
+- 💫 **60+ animações CSS** (stagger, hover, entrance)
+- 🎨 **Sistema de cores** consistente
 
-## 🚢 Deploy
+### Segurança
 
-### Vercel (Recomendado)
-
-**1. Importe o repositório**
-
-- Vá para [vercel.com](https://vercel.com)
-- New Project → Import from GitHub
-- Selecione `kpi-dashboard-full-stack`
-
-**2. Configure variáveis de ambiente**
-
-Adicione todas as variáveis do `.env.local`:
-
-- `NOTION_API_KEY`
-- `NOTION_VERSION`
-- `NOTION_DB_TODAY_TASKS`
-- `NOTION_DB_HOURS_WEEK`
-- `NOTION_DB_HOUR_TRACKER`
-- `NOTION_DB_TASK_PANEL`
-- `NOTION_DB_ACTIVE_PROJECTS`
-- `NOTION_DB_ROADMAP`
-
-**3. Deploy!**
-
-Clique em "Deploy" e aguarde ~3 minutos ✅
-
-**4. Atualizações automáticas**
-
-Cada push no GitHub = novo deploy automático! 🚀
-
-### Outras Plataformas
-
-O projeto é compatível com:
-
-- **Netlify**: Suporta Next.js
-- **Railway**: Deploy direto do GitHub
-- **AWS Amplify**: Integração com Next.js
-- **Google Cloud Run**: Containerização
+- 🔒 **Variáveis de ambiente** (.env.local)
+- 🚫 **Token nunca exposto** no frontend
+- ✅ **Validação de dados** da API
+- 🛡️ **HTTPS obrigatório** (Vercel)
+- 🔐 **CORS configurado** corretamente
+- 🔑 **Webhook HMAC SHA256** validation
 
 ---
 
 ## 📈 Roadmap
 
-### ✅ v1.0 (Atual)
+### ✅ v1.5 (Atual) - PWA & Integrações
 
-- ✅ Integração completa com Notion (6 databases)
-- ✅ 15 KPIs calculados automaticamente
-- ✅ 4 OKRs Q1 2026 com 16 Key Results
-- ✅ Dashboard visual com gráficos
-- ✅ 4 páginas (Home, KPIs, OKRs, Projetos)
-- ✅ Tema dark/light
-- ✅ Mobile 100% responsivo
-- ✅ Deploy Vercel
+- ✅ PWA (Progressive Web App)
+- ✅ Integração GitHub API completa
+- ✅ GitHub Webhook (tempo real)
+- ✅ Página /github
+- ✅ Relatórios e Insights automáticos
+- ✅ Sistema de animações CSS
+- ✅ Cache inteligente
 
-### 🔄 v1.1 (Próximo)
+### 🔄 v1.6 (Próximo)
 
-- 🔄 Integração GitHub API (commits reais)
-- 🔄 Cache global com Redis
-- 🔄 Otimização de loading (24s → 2s)
 - 🔄 Export PDF de relatórios
 - 🔄 Comparação mês a mês
-- 🔄 Metas personalizáveis por semana
-- 🔄 Sistema de notificações
+- 🔄 Notificações push
+- 🔄 Metas personalizáveis
+- 🔄 Otimização com Redis
 
 ### 🔮 v2.0 (Futuro)
 
-- 🔮 **Automação total**: OKRs do Notion (eliminar atualização manual)
-- 🔮 **Machine Learning**: Previsão de tendências e metas
-- 🔮 **Gamificação**: Badges, níveis, conquistas
-- 🔮 **Integração Slack**: Notificações e resumos
-- 🔮 **Modo Pomodoro**: Timer integrado
-- 🔮 **API Pública**: Endpoints para consumo externo
-- 🔮 **Progressive Web App** (PWA)
-- 🔮 **App Mobile**: React Native (iOS/Android)
-- 🔮 Test webhook
+- 🔮 Machine Learning (previsão de tendências)
+- 🔮 Gamificação (badges, níveis)
+- 🔮 Integração Slack
+- 🔮 Modo Pomodoro
+- 🔮 API Pública
+- 🔮 App Mobile (React Native)
 
 ---
 
@@ -542,13 +577,6 @@ Encontrou um bug? Abra uma [issue](https://github.com/Luiz-9858/kpi-dashboard-fu
 
 Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-Você é livre para:
-
-- ✅ Usar comercialmente
-- ✅ Modificar
-- ✅ Distribuir
-- ✅ Usar em projetos privados
-
 ---
 
 ## 👤 Autor
@@ -556,26 +584,26 @@ Você é livre para:
 **Luiz Fernando**
 
 - GitHub: [@Luiz-9858](https://github.com/Luiz-9858)
-- LinkedIn: [Seu Perfil](www.linkedin.com/in/luiz-fernando-9747922b7)
+- LinkedIn: [Luiz Fernando](www.linkedin.com/in/luiz-fernando-9747922b7)
 - Portfolio: [kpi-dashboard-full-stack.vercel.app](https://kpi-dashboard-full-stack.vercel.app)
-- Email: seu@email.com
 
 ---
 
 ## 🙏 Agradecimentos
 
-- **[Notion](https://notion.so)** - Pela API incrível e plataforma versátil
-- **[Vercel](https://vercel.com)** - Pelo deploy gratuito e CI/CD automático
+- **[Notion](https://notion.so)** - Pela API incrível
+- **[GitHub](https://github.com)** - Pela API e webhooks
+- **[Vercel](https://vercel.com)** - Pelo deploy gratuito e CI/CD
 - **[Next.js](https://nextjs.org)** - Framework React fantástico
 - **[Tailwind CSS](https://tailwindcss.com)** - Framework CSS moderno
-- **[Recharts](https://recharts.org)** - Biblioteca de gráficos elegante
+- **[Recharts](https://recharts.org)** - Biblioteca de gráficos
 - **Comunidade Open Source** 💙
 
 ---
 
 ## 💡 Inspiração
 
-Este projeto foi criado para resolver um problema real: **acompanhar meu progresso como desenvolvedor de forma visual e automática**.
+Este projeto foi criado para resolver um problema real: **acompanhar meu progresso como desenvolvedor de forma visual e automática, com dados reais do Notion e GitHub**.
 
 Se você é desenvolvedor e quer evoluir com dados, este dashboard pode te ajudar! 🚀
 
@@ -587,7 +615,6 @@ Se você é desenvolvedor e quer evoluir com dados, este dashboard pode te ajuda
 
 **Desenvolvido com ❤️ e ☕ por um desenvolvedor que quer evoluir com dados**
 
+[![Instalar PWA](https://img.shields.io/badge/📱_Instalar-PWA-purple?style=for-the-badge)](https://kpi-dashboard-full-stack.vercel.app)
+
 </div>
-test
-test
-test
