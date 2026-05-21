@@ -11,7 +11,8 @@ import {
   TrendingUp,
   FolderOpen,
   FileText,
-  Github,
+  Github as GithubIcon,
+  BarChart3,
   Moon,
   Sun,
   Menu,
@@ -29,8 +30,9 @@ export default function Header() {
     { href: "/kpis", label: "KPIs", icon: TrendingUp },
     { href: "/okrs", label: "OKRs", icon: Target },
     { href: "/projetos", label: "Projetos", icon: FolderOpen },
+    { href: "/comparacao", label: "Comparação", icon: BarChart3 },
     { href: "/relatorios", label: "Relatórios", icon: FileText },
-    { href: "/github", label: "GitHub", icon: Github },
+    { href: "/github", label: "GitHub", icon: GithubIcon },
   ];
 
   // Verifica se link está ativo
