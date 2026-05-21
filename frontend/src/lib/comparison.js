@@ -154,7 +154,11 @@ export function compareMonths(currentMonth, previousMonth) {
     const previous = previousMonth[key];
     const diff = current - previous;
     const percentChange =
-      previous > 0 ? ((diff / previous) * 100).toFixed(1) : 0;
+      previous > 0
+        ? ((diff / previous) * 100).toFixed(1)
+        : current > 0
+          ? "100.0"
+          : "0.0";
 
     comparison[key] = {
       current,
