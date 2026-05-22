@@ -14,6 +14,18 @@ import {
 let cache = {};
 const CACHE_DURATION = 10 * 60 * 1000;
 
+// Arredondar valores para 2 casas decimais
+function roundKPIs(kpis) {
+  const rounded = {};
+  Object.keys(kpis).forEach((key) => {
+    rounded[key] =
+      typeof kpis[key] === "number"
+        ? Math.round(kpis[key] * 100) / 100
+        : kpis[key];
+  });
+  return rounded;
+}
+
 export default async function handler(req, res) {
   const { currentMonth, previousMonth, history } = req.query;
 
@@ -86,8 +98,8 @@ export default async function handler(req, res) {
     const result = {
       currentMonth: current,
       previousMonth: previous,
-      currentKPIs,
-      previousKPIs,
+      currentKPIs: roundKPIs(currentKPIs), // Arredondar para 2 casas
+      previousKPIs: roundKPIs(previousKPIs), // Arredondar para 2 casas
       comparison,
       insights,
       chartData,
