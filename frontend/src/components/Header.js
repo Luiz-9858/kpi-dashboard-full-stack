@@ -11,7 +11,7 @@ import {
   TrendingUp,
   FolderOpen,
   FileText,
-  GitHub as GitHubIcon,
+  Github as GitHubIcon,
   BarChart3,
   Moon,
   Sun,
