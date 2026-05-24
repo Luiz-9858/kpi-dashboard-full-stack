@@ -1,6 +1,7 @@
 // pages/api/comparison.js - API de Comparação Mensal
 
-import { format, subMonths } from "date-fns";
+import { format, subMonths, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import {
   getHourTrackerByMonth,
   calculateMonthlyKPIs,
@@ -87,8 +88,12 @@ export default async function handler(req, res) {
     const insights = generateInsights(comparison);
 
     // Dados do gráfico
-    const currentMonthName = format(new Date(`${current}-01`), "MMM");
-    const previousMonthName = format(new Date(`${previous}-01`), "MMM");
+    const currentMonthName = format(parseISO(`${current}-01`), "MMM", {
+      locale: ptBR,
+    });
+    const previousMonthName = format(parseISO(`${previous}-01`), "MMM", {
+      locale: ptBR,
+    });
     const chartData = generateChartData(
       comparison,
       currentMonthName,
