@@ -3,6 +3,8 @@
 // 100% RESPONSIVO + ANIMAÇÕES
 
 import { useState, useEffect } from "react";
+import { generateReportPDF, formatDataForPDF } from "../lib/pdfExport";
+import { Download } from "lucide-react";
 import Head from "next/head";
 import Header from "@/components/Header";
 import { SkeletonCard, ErrorState } from "@/components/Loading";
@@ -58,6 +60,30 @@ export default function RelatoriosPage() {
     }
   }
 
+  // Função para baixar PDF
+  const handleDownloadPDF = () => {
+    if (!currentWeekData) {
+      alert("Aguarde os dados carregarem!");
+      return;
+    }
+
+    try {
+      console.log("=== ESTRUTURA COMPLETA ===");
+      console.log("currentWeekData:", currentWeekData);
+      console.log("=========================");
+
+      const pdfData = formatDataForPDF(currentWeekData);
+      console.log("=== DADOS FORMATADOS ===");
+      console.log("pdfData:", pdfData);
+      console.log("========================");
+
+      generateReportPDF(pdfData);
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      alert("Erro ao gerar PDF. Tente novamente.");
+    }
+  };
+
   // Gera insights e análises
   const insights =
     currentWeekData && generateInsights(currentWeekData, previousWeekData);
@@ -89,14 +115,27 @@ export default function RelatoriosPage() {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
                 <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
-                  Relatórios Semanais
-                </h1>
-                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
-                  Análises, insights e recomendações personalizadas
-                </p>
+
+              {/* Cabeçalho com botão */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    📊 Relatórios Semanais
+                  </h1>
+                </div>
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all whitespace-nowrap"
+                >
+                  <Download className="w-5 h-5" />
+                  <span>Baixar PDF</span>
+                </button>
               </div>
+
+              <p className="text-gray-600 dark:text-gray-400 mb-8">
+                Análises, insights e recomendações personalizadas
+              </p>
             </div>
           </div>
 
