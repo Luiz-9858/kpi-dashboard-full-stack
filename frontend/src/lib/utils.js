@@ -484,3 +484,49 @@ export function getStatusColor(status) {
 export function cn(...classes) {
   return classes.filter(Boolean).join(" ");
 }
+
+// ============================================
+// TRIMESTRES (Q1, Q2, Q3, Q4) - AUTOMÁTICO
+// ============================================
+
+/**
+ * Detecta qual trimestre estamos (Q1, Q2, Q3, Q4)
+ * @returns {string} Ex: "Q1", "Q2", "Q3", "Q4"
+ */
+export function getCurrentQuarter() {
+  const month = new Date().getMonth() + 1; // 1-12
+
+  if (month <= 3) return "Q1";
+  if (month <= 6) return "Q2";
+  if (month <= 9) return "Q3";
+  return "Q4";
+}
+
+/**
+ * Retorna meses do trimestre
+ * @param {string} quarter - Ex: "Q1", "Q2", "Q3", "Q4"
+ * @returns {Object} { start: "Janeiro", end: "Março", months: [1, 2, 3] }
+ */
+export function getQuarterMonths(quarter) {
+  const months = {
+    Q1: { start: "Janeiro", end: "Março", months: [1, 2, 3] },
+    Q2: { start: "Abril", end: "Junho", months: [4, 5, 6] },
+    Q3: { start: "Julho", end: "Setembro", months: [7, 8, 9] },
+    Q4: { start: "Outubro", end: "Dezembro", months: [10, 11, 12] },
+  };
+
+  return months[quarter] || months.Q1;
+}
+
+/**
+ * Calcula data de próxima revisão (próximo domingo)
+ * @returns {string} Próximo domingo formatado em português
+ */
+export function getNextReviewDate() {
+  const today = new Date();
+  const daysUntilSunday = (7 - today.getDay()) % 7 || 7;
+  const nextSunday = new Date(today);
+  nextSunday.setDate(today.getDate() + daysUntilSunday);
+
+  return format(nextSunday, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+}
