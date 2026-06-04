@@ -8,6 +8,11 @@ import Header from "@/components/Header";
 import { SkeletonCard, ErrorState } from "@/components/Loading";
 import { CircularProgress, ProgressRing } from "@/components/AdvancedCharts";
 import {
+  getCurrentQuarter,
+  getQuarterMonths,
+  getNextReviewDate,
+} from "@/lib/utils";
+import {
   Target,
   TrendingUp,
   CheckCircle2,
@@ -193,47 +198,56 @@ export default function OKRsPage() {
           )}
 
           {/* Timeline - ANIMAÇÃO */}
-          {!loading && !error && okrsData.length > 0 && (
-            <div className="card mt-6 sm:mt-8 p-4 sm:p-5 animate-fade-in-up delay-500">
-              <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-3 sm:mb-4">
-                📅 Timeline {okrsSummary?.quarter || "Q1 2026"}
-              </h2>
-              <div className="space-y-2 text-xs sm:text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-600 dark:text-slate-400 min-w-[70px]">
-                    Início:
-                  </span>
-                  <span className="font-medium text-slate-900 dark:text-white">
-                    Janeiro 2026
-                  </span>
+          {!loading &&
+            !error &&
+            okrsData.length > 0 &&
+            (() => {
+              const currentQuarter = getCurrentQuarter();
+              const quarterInfo = getQuarterMonths(currentQuarter);
+              const nextReview = getNextReviewDate();
+
+              return (
+                <div className="card mt-6 sm:mt-8 p-4 sm:p-5 animate-fade-in-up delay-500">
+                  <h2 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-3 sm:mb-4">
+                    📅 Timeline {currentQuarter}
+                  </h2>
+                  <div className="space-y-2 text-xs sm:text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-600 dark:text-slate-400 min-w-[70px]">
+                        Período:
+                      </span>
+                      <span className="font-medium text-slate-900 dark:text-white">
+                        {quarterInfo.start} - {quarterInfo.end} 2026
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-600 dark:text-slate-400 min-w-[70px]">
+                        Revisão:
+                      </span>
+                      <span className="font-medium text-slate-900 dark:text-white">
+                        Semanal (Domingos)
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-600 dark:text-slate-400 min-w-[70px]">
+                        Próxima:
+                      </span>
+                      <span className="font-medium text-slate-900 dark:text-white">
+                        {nextReview}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-600 dark:text-slate-400 min-w-[70px]">
+                        Atualização:
+                      </span>
+                      <span className="font-medium text-blue-600 dark:text-blue-400">
+                        Automática do Notion ✨
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-600 dark:text-slate-400 min-w-[70px]">
-                    Término:
-                  </span>
-                  <span className="font-medium text-slate-900 dark:text-white">
-                    Março 2026
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-600 dark:text-slate-400 min-w-[70px]">
-                    Revisão:
-                  </span>
-                  <span className="font-medium text-slate-900 dark:text-white">
-                    Semanal (Domingos)
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-600 dark:text-slate-400 min-w-[70px]">
-                    Atualização:
-                  </span>
-                  <span className="font-medium text-blue-600 dark:text-blue-400">
-                    Automática do Notion ✨
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
+              );
+            })()}
         </main>
       </div>
     </>
