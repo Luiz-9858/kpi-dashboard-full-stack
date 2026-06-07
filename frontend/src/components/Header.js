@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useTheme } from "../hooks/useTheme";
+import NotificationBell from "./NotificationBell";
 import {
   LayoutDashboard,
   Target,
@@ -97,6 +98,8 @@ export default function Header() {
 
             {/* Botões de ação */}
             <div className="flex items-center gap-2">
+              <NotificationBell />
+
               {/* Toggle tema */}
               {mounted && (
                 <button
