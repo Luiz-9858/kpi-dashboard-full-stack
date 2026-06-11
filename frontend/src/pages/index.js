@@ -32,6 +32,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const { updateNotifications } = useNotifications();
+
   // Busca dados da API
   useEffect(() => {
     fetchDashboardData();
@@ -50,6 +52,7 @@ export default function Dashboard() {
 
       if (result.success) {
         setData(result.data);
+        upsdateNotifications(result.data);
       } else {
         throw new Error(result.error || "Erro desconhecido");
       }
