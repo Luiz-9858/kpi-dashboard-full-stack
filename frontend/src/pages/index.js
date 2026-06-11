@@ -5,6 +5,7 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import Header from "../components/Header";
+import { useNotifications } from "@/hooks/useNotifications";
 import StatsCard, { StatsGrid } from "../components/StatsCard";
 import KPICard from "../components/KPICard";
 import {
@@ -32,9 +33,9 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // ← ADICIONAR ESTA LINHA
   const { updateNotifications } = useNotifications();
 
-  // Busca dados da API
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -52,7 +53,7 @@ export default function Dashboard() {
 
       if (result.success) {
         setData(result.data);
-        upsdateNotifications(result.data);
+        updateNotifications(result.data); // ← ADICIONAR ESTA LINHA
       } else {
         throw new Error(result.error || "Erro desconhecido");
       }
