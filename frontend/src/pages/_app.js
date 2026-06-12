@@ -1,10 +1,13 @@
 // pages/_app.js
 // Layout principal da aplicação Next.js
 
-import '../styles/globals.css';
-import Head from 'next/head';
+import "../styles/globals.css";
+import Head from "next/head";
+import { NotificationProvider } from "@/hooks/useNotifications";
 
 function MyApp({ Component, pageProps }) {
+  // Pegar dados do dashboard se existirem (para gerar notificações globais)
+  const dashboardData = pageProps.dashboardData || null;
   return (
     <>
       <Head>
@@ -12,10 +15,10 @@ function MyApp({ Component, pageProps }) {
         <meta name="theme-color" content="#3b82f6" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+
+      <NotificationProvider dashboardData={dashboardData}>
         <Component {...pageProps} />
-      </div>
+      </NotificationProvider>
     </>
   );
 }
