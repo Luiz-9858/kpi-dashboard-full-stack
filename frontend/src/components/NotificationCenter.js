@@ -105,6 +105,17 @@ export default function NotificationCenter({ onClose }) {
             Avisos
           </button>
           <button
+            onClick={() => setFilterType("info")}
+            className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors
+             ${
+               filterType === "info"
+                 ? "bg-blue-600 text-white"
+                 : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+             }`}
+          >
+            Informações
+          </button>
+          <button
             onClick={() => setFilterType("success")}
             className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors
                        ${
@@ -119,7 +130,7 @@ export default function NotificationCenter({ onClose }) {
       </div>
 
       {/* Lista de notificações */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto max-h-96 pr-2">
         {displayNotifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full py-8 text-center">
             <div className="text-4xl mb-2">🎉</div>
