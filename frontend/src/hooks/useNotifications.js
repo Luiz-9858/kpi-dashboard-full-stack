@@ -44,12 +44,22 @@ export function NotificationProvider({ children, dashboardData: initialData }) {
   }, [initialData]);
 
   // Atualizar notificações manualmente (chamado quando busca dados em index.js)
-  const updateNotifications = useCallback((dashboardData) => {
-    if (dashboardData) {
-      const newNotifications = generateNotifications(dashboardData);
-      setNotifications(newNotifications);
-    }
-  }, []);
+  const updateNotifications = useCallback(
+    (dashboardData) => {
+      if (dashboardData) {
+        const newNotifications = generateNotifications(dashboardData);
+
+        // Manter timestamp das notificações antigas
+        const updatedNotifications = newNotifications.map((notif) => {
+          const oldNotif = notifications.find((n) => n.id === notif.id);
+          return oldNotif ? { ...notif, timestamp: oldNotif.timestamp } : notif;
+        });
+
+        setNotifications(updatedNotifications);
+      }
+    },
+    [notifications],
+  ); // ← ADICIONAR ESTA DEPENDÊNCIA!
 
   // Adicionar notificação manual
   const addNotification = useCallback((notification) => {
