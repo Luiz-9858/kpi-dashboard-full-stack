@@ -40,7 +40,7 @@ export function generateNotifications(dashboardData) {
               category: "kpi",
               timestamp,
               dismissible: true,
-              actionUrl: "/dashboard",
+              actionUrl: "/",
             });
           }
         });
@@ -74,7 +74,7 @@ export function generateNotifications(dashboardData) {
               category: "kpi",
               timestamp,
               dismissible: true,
-              actionUrl: "/dashboard",
+              actionUrl: "/",
             });
           }
         });
@@ -96,7 +96,7 @@ export function generateNotifications(dashboardData) {
       category: "celebration",
       timestamp,
       dismissible: true,
-      actionUrl: "/dashboard",
+      actionUrl: "/",
     });
   }
 
@@ -128,7 +128,7 @@ export function generateNotifications(dashboardData) {
       category: "celebration",
       timestamp,
       dismissible: true,
-      actionUrl: "/dashboard",
+      actionUrl: "/",
     });
   }
 
@@ -145,7 +145,7 @@ export function generateNotifications(dashboardData) {
         category: "progress",
         timestamp,
         dismissible: true,
-        actionUrl: "/dashboard",
+        actionUrl: "/",
       });
     } else if (weeklyProgress.status === "warning") {
       notifications.push({
@@ -158,7 +158,7 @@ export function generateNotifications(dashboardData) {
         category: "progress",
         timestamp,
         dismissible: true,
-        actionUrl: "/dashboard",
+        actionUrl: "/",
       });
     }
   }
