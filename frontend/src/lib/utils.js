@@ -123,7 +123,7 @@ export function formatHours(hours) {
   if (m === 0) return `${h}h`;
   if (h === 0) return `${m}min`;
 
-  return `${h}h${m}min`;
+  return `${h}h ${m}min`;
 }
 
 /**
