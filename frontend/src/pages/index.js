@@ -27,6 +27,7 @@ import {
   BarChart3,
   Zap,
 } from "lucide-react";
+import { formatHours } from "@/lib/utils";
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -126,7 +127,7 @@ export default function Dashboard() {
   const statsData = [
     {
       title: "Horas esta semana",
-      value: `${data.quickStats.totalHoursWeek}h`,
+      value: formatHours(data.quickStats.totalHoursWeek),
       subtitle: "Meta: 20-23h",
       icon: Clock,
       color: "blue",
@@ -485,8 +486,8 @@ export default function Dashboard() {
             </div>
             <div className="flex flex-col sm:flex-row sm:justify-between gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               <span>
-                {Number(data.weeklyProgress.real).toFixed(1)}h de{" "}
-                {Number(data.weeklyProgress.planned).toFixed(1)}h planejadas
+                {formatHours(data.weeklyProgress.real)} de{" "}
+                {formatHours(data.weeklyProgress.planned)} planejadas
               </span>
               <span>Meta: 20-23h</span>
             </div>
