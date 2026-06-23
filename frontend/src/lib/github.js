@@ -354,6 +354,78 @@ export async function getCommitStreak() {
 }
 
 /**
+ * Calcula linguagens mais usadas baseado em BYTES de código
+ */
+async function getTopLanguages(repos) {
+  const languageBytes = {};
+  let totalBytes = 0;
+
+  // Buscar bytes de CADA repo
+  const languagePromises = repos.map(async (repo) => {
+    try {
+      const response = await fetch(
+        `https://api.github.com/repos/${repo.fullName}/languages`,
+        {
+          headers: {
+            Accept: "application/vnd.github.v3+json",
+            ...(process.env.GITHUB_TOKEN && {
+              Authorization: `token ${process.env.GITHUB_TOKEN}`,
+            }),
+          },
+        },
+      );
+
+      if (!response.ok) {
+        console.warn(
+          `[GitHub] Erro ao buscar linguagens de ${repo.fullName}: ${response.status}`,
+        );
+        return {};
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(
+        `[GitHub] Erro ao buscar linguagens de ${repo.fullName}:`,
+        error.message,
+      );
+      return {};
+    }
+  });
+
+  // Aguardar todas
+  const allLanguages = await Promise.all(languagePromises);
+
+  // Consolidar bytes
+  allLanguages.forEach((repoLanguages) => {
+    Object.entries(repoLanguages).forEach(([language, bytes]) => {
+      languageBytes[language] = (languageBytes[language] || 0) + bytes;
+      totalBytes += bytes;
+    });
+  });
+
+  if (totalBytes === 0) {
+    console.log("[GitHub] Nenhuma linguagem encontrada");
+    return [];
+  }
+
+  // Retornar top 8 por bytes
+  const topLanguages = Object.entries(languageBytes)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([language, bytes]) => ({
+      language,
+      bytes,
+      percentage: ((bytes / totalBytes) * 100).toFixed(1),
+    }));
+
+  console.log(
+    `[GitHub] Linguagens encontradas: ${topLanguages.map((l) => `${l.language} (${l.percentage}%)`).join(", ")}`,
+  );
+
+  return topLanguages;
+}
+
+/**
  * Estatísticas gerais do GitHub
  */
 export async function getGitHubStats(days = 7) {
@@ -373,6 +445,9 @@ export async function getGitHubStats(days = 7) {
       return updatedAt >= thirtyDaysAgo;
     });
 
+    // Buscar linguagens
+    const languages = await getTopLanguages(repos);
+
     return {
       commits: {
         total: commits.total,
@@ -388,32 +463,11 @@ export async function getGitHubStats(days = 7) {
       repositories: {
         total: repos.length,
         active: activeRepos.length,
-        languages: getTopLanguages(repos),
+        languages: languages,
       },
     };
   } catch (error) {
     console.error("[GitHub] Erro ao buscar estatísticas:", error);
     return null;
   }
-}
-
-/**
- * Calcula linguagens mais usadas
- */
-function getTopLanguages(repos) {
-  const languageCounts = repos.reduce((acc, repo) => {
-    if (repo.language) {
-      acc[repo.language] = (acc[repo.language] || 0) + 1;
-    }
-    return acc;
-  }, {});
-
-  return Object.entries(languageCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([language, count]) => ({
-      language,
-      count,
-      percentage: ((count / repos.length) * 100).toFixed(1),
-    }));
 }
