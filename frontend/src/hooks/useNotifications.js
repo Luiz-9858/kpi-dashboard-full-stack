@@ -10,6 +10,21 @@ import {
 } from "react";
 import { generateNotifications } from "@/lib/notifications";
 
+// ← ADICIONAR ISTO:
+const DISMISSED_KEY = "dismissed-notifications";
+
+function getDismissedNotifications() {
+  if (typeof window === "undefined") return new Set();
+  const stored = localStorage.getItem(DISMISSED_KEY);
+  return new Set(stored ? JSON.parse(stored) : []);
+}
+
+function saveDismissedNotifications(dismissed) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(DISMISSED_KEY, JSON.stringify(Array.from(dismissed)));
+}
+// ← ATÉ AQUI
+
 // Context (exportar para usar em _app.js)
 export const NotificationContext = createContext();
 
@@ -47,7 +62,10 @@ export function NotificationProvider({ children, dashboardData: initialData }) {
   const updateNotifications = useCallback(
     (dashboardData) => {
       if (dashboardData) {
-        const newNotifications = generateNotifications(dashboardData);
+        let newNotifications = generateNotifications(dashboardData);
+
+        const dismissed = getDismissedNotifications();
+        newNotifications = newNotifications.filter((n) => !dismissed.has(n.id));
 
         // Manter timestamp das notificações antigas
         const updatedNotifications = newNotifications.map((notif) => {
@@ -85,9 +103,14 @@ export function NotificationProvider({ children, dashboardData: initialData }) {
 
   // Remover notificação específica
   const removeNotification = useCallback((id) => {
+    // Guardar em localStorage
+    const dismissed = getDismissedNotifications();
+    dismissed.add(id);
+    saveDismissedNotifications(dismissed);
+
+    // Remover do state
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   }, []);
-
   // Limpar todas
   const clearAll = useCallback(() => {
     setNotifications([]);
