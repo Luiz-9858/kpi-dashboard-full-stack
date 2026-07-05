@@ -152,19 +152,19 @@ export function compareMonths(currentMonth, previousMonth) {
   Object.keys(currentMonth).forEach((key) => {
     const current = currentMonth[key];
     const previous = previousMonth[key];
-    const diff = current - previous;
+    const diff = Number((current - previous).toFixed(1)); // ← MUDANÇA AQUI!
     const percentChange =
       previous > 0
-        ? ((diff / previous) * 100).toFixed(1)
+        ? Number(((diff / previous) * 100).toFixed(1))
         : current > 0
-          ? "100.0"
-          : "0.0";
+          ? 100
+          : 0;
 
     comparison[key] = {
-      current,
-      previous,
-      diff,
-      percentChange: parseFloat(percentChange),
+      current: Number(current.toFixed(1)),
+      previous: Number(previous.toFixed(1)),
+      diff, // já está corrigido!
+      percentChange: Number(percentChange.toFixed(1)),
       status: diff > 0 ? "up" : diff < 0 ? "down" : "same",
       emoji: diff > 0 ? "🟢" : diff < 0 ? "🔴" : "🟡",
     };
