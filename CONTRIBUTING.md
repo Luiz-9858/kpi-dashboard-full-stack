@@ -26,6 +26,7 @@ Este projeto segue um código de conduta simples:
 - ✅ Demonstre empatia com outros membros
 
 Comportamentos inaceitáveis:
+
 - ❌ Linguagem ou imagens sexualizadas
 - ❌ Trolling, insultos ou ataques pessoais
 - ❌ Assédio público ou privado
@@ -38,21 +39,27 @@ Comportamentos inaceitáveis:
 Existem várias formas de contribuir:
 
 ### 1. 🐛 Reportar Bugs
+
 Encontrou um bug? Abra uma issue!
 
 ### 2. 💡 Sugerir Features
+
 Tem uma ideia? Compartilhe conosco!
 
 ### 3. 📝 Melhorar Documentação
+
 Documentação nunca é demais.
 
 ### 4. 💻 Contribuir com Código
+
 Implemente features ou corrija bugs.
 
 ### 5. 🎨 Design e UX
+
 Sugestões de melhorias visuais.
 
 ### 6. 🧪 Testar
+
 Use o dashboard e reporte problemas.
 
 ---
@@ -66,30 +73,38 @@ Antes de criar uma issue, verifique se já não existe uma similar.
 Crie uma issue com:
 
 **Título claro e descritivo:**
+
 ```
 Bug: Dashboard não carrega dados do Notion
 ```
 
 **Descrição detalhada:**
+
 ```markdown
 ### Descrição
+
 Ao tentar carregar o dashboard, aparece erro 500.
 
 ### Passos para Reproduzir
+
 1. Acesse http://localhost:3000
 2. Aguarde carregamento
 3. Erro aparece no console
 
 ### Comportamento Esperado
+
 Dashboard deveria carregar os dados do Notion.
 
 ### Comportamento Atual
+
 Erro 500 no console.
 
 ### Screenshots
+
 [Cole screenshot do erro]
 
 ### Ambiente
+
 - OS: Windows 11
 - Browser: Chrome 120
 - Node: v20.10.0
@@ -97,8 +112,10 @@ Erro 500 no console.
 
 ### Logs
 ```
+
 Error: Database not found
-    at /api/dashboard.js:23
+at /api/dashboard.js:23
+
 ```
 
 ### Informação Adicional
@@ -115,22 +132,27 @@ Use o template:
 
 ```markdown
 ### Feature Sugerida
+
 Integração com GitHub API para buscar commits automaticamente.
 
 ### Motivação
+
 Atualmente é preciso registrar commits manualmente no Notion.
 
 ### Solução Proposta
+
 1. Adicionar campo GITHUB_TOKEN no .env
 2. Criar endpoint /api/github
 3. Buscar commits via API do GitHub
 4. Atualizar KPI de commits automaticamente
 
 ### Alternativas Consideradas
+
 - Webhook do GitHub (mais complexo)
 - Scraping do perfil (não confiável)
 
 ### Informação Adicional
+
 GitHub API é grátis até 5000 requests/hora.
 ```
 
@@ -138,15 +160,19 @@ GitHub API é grátis até 5000 requests/hora.
 
 ```markdown
 ### Melhoria Sugerida
+
 Dashboard carrega muito devagar.
 
 ### Problema Atual
+
 Leva ~3 segundos para carregar.
 
 ### Solução Proposta
+
 Implementar ISR (Incremental Static Regeneration) do Next.js.
 
 ### Benefícios
+
 - Carregamento instantâneo
 - Dados ainda atualizados
 - Melhor experiência do usuário
@@ -233,6 +259,7 @@ git commit -m "docs: improve SETUP.md clarity"
 ### Como Submeter
 
 1. **Push para seu fork:**
+
 ```bash
 git push origin feature/nome-da-feature
 ```
@@ -243,20 +270,24 @@ git push origin feature/nome-da-feature
 
 ```markdown
 ### Descrição
+
 Implementa integração com GitHub API para buscar commits.
 
 ### Tipo de Mudança
+
 - [ ] Bug fix
 - [x] Nova feature
 - [ ] Breaking change
 - [ ] Documentação
 
 ### Como Testar
+
 1. Configure GITHUB_TOKEN no .env.local
 2. Acesse o dashboard
 3. KPI de commits deve atualizar automaticamente
 
 ### Checklist
+
 - [x] Código testado localmente
 - [x] Documentação atualizada
 - [x] Sem warnings
@@ -264,9 +295,11 @@ Implementa integração com GitHub API para buscar commits.
 - [x] Segue guia de estilo
 
 ### Screenshots
+
 [Se aplicável]
 
 ### Issues Relacionadas
+
 Closes #42
 ```
 
@@ -314,23 +347,23 @@ Ordem preferencial:
 
 ```javascript
 // 1. React/Next
-import { useState } from 'react';
-import Link from 'next/link';
+import { useState } from "react";
+import Link from "next/link";
 
 // 2. Bibliotecas externas
-import { format } from 'date-fns';
+import { format } from "date-fns";
 
 // 3. Hooks customizados
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from "@/hooks/useTheme";
 
 // 4. Componentes
-import Header from '@/components/Header';
+import Header from "@/components/Header";
 
 // 5. Utilitários
-import { formatDate } from '@/lib/utils';
+import { formatDate } from "@/lib/utils";
 
 // 6. Estilos (se houver)
-import styles from './styles.module.css';
+import styles from "./styles.module.css";
 ```
 
 #### Componentes
@@ -339,7 +372,7 @@ import styles from './styles.module.css';
 // ✅ Bom
 export default function KPICard({ kpi }) {
   const { value, status } = kpi;
-  
+
   return (
     <div className="card">
       <span>{value}</span>
@@ -366,7 +399,13 @@ return <Dashboard data={data} />;
 
 // ❌ Evitar
 const dashboard = useDashboard();
-return dashboard.loading ? <Loading /> : dashboard.error ? <Error /> : <Dashboard />;
+return dashboard.loading ? (
+  <Loading />
+) : dashboard.error ? (
+  <Error />
+) : (
+  <Dashboard />
+);
 ```
 
 ### CSS/Tailwind
@@ -432,6 +471,7 @@ function calculateProgress(current, target) {
 ### README
 
 Ao adicionar feature, atualize:
+
 - README.md (se afeta uso geral)
 - CHANGELOG.md (sempre)
 - API.md (se afeta API)
@@ -472,6 +512,7 @@ Toda contribuição é valiosa! Desde reportar um bug até implementar uma featu
 ---
 
 **Guia baseado em:**
+
 - [Contributor Covenant](https://www.contributor-covenant.org/)
 - [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/)
 - [Conventional Commits](https://www.conventionalcommits.org/)
