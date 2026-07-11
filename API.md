@@ -498,7 +498,7 @@ Verá o JSON no navegador.
 
 ---
 
-## 📚 Recursos Adicionais
+## 📚 Recursos - Adicionais
 
 - [Notion API Documentation](https://developers.notion.com/)
 - [Next.js API Routes](https://nextjs.org/docs/api-routes/introduction)
