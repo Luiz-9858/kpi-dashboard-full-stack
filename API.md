@@ -487,7 +487,7 @@ Verá o JSON no navegador.
 
 **POST `/api/refresh`**
 
-- Força atualização do cache
+- Força atualização do cache e/ou caches
 - Útil para webhooks
 
 **GET `/api/health`**
