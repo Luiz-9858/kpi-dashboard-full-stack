@@ -502,6 +502,6 @@ Total: $140K-220K em 12 meses
 
 ---
 
-**Última atualização**: Junho 2026
+**Última atualização**: Julho 2026
 
 ⭐ **Sua opinião importa! Vote em features que você quer!**
