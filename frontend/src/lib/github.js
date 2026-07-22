@@ -313,7 +313,7 @@ export async function getCommitStreak() {
       // Pega data UTC
       const dateUTC = new Date(commit.commit.author.date);
 
-      // Aplica offset de -3h
+      // Aplica offset de -3horas
       const dateBR = new Date(dateUTC.getTime() - 3 * 60 * 60 * 1000);
 
       // Extrai apenas a data
