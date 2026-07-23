@@ -1,6 +1,6 @@
 // pages/kpis.js
 // Página completa de KPIs com 15 indicadores
-// OTIMIZADO PARA MOBILE + ANIMAÇÕES
+// OTIMIZADO PARA MOBILE MAIS ANIMAÇÕES
 
 import { useState, useEffect } from "react";
 import Head from "next/head";
