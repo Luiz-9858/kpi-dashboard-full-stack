@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Header from "@/components/Header";
 import KPICard from "@/components/KPICard";
+import { formatHours } from "@/lib/utils";
 import { SkeletonCard, ErrorState } from "@/components/Loading";
 import {
   BarChart3,
