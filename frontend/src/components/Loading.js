@@ -1,6 +1,6 @@
 // components/Loading.js
 // Componentes de loading para diferentes situações
-// OTIMIZADO PARA MOBILE - Responsividade completa
+// OTIMIZADO PARA MOBILE - Responsividade Completa
 
 import { Loader2 } from "lucide-react";
 
