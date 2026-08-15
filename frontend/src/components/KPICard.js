@@ -1,6 +1,7 @@
 // components/KPICard.js
 // Componente para exibir um KPI individual com status visual
 //  COM ANIMAÇÕES NATIVAS
+import { formatHours } from "@/lib/utils";
 
 import { TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 
@@ -113,7 +114,7 @@ export default function KPICard({ kpi }) {
       {/* Valor principal */}
       <div className="flex items-baseline gap-2 mt-3">
         <span className="kpi-card-value">
-          {value}
+          {unit === "h" ? formatHours(value) : value}
           <span className="text-lg font-normal text-slate-500 dark:text-slate-400 ml-1">
             {unit}
           </span>
