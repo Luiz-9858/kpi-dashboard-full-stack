@@ -2,6 +2,7 @@
 // Integração com GitHub API - VERSÃO SIMPLIFICADA
 // Correção de fuso horário GMT-3 (Brasil) - SIMPLIFICADO
 // Username: Luiz-9858
+import { formatHours } from "@/lib/utils";
 
 const GITHUB_USERNAME = "Luiz-9858";
 const GITHUB_API = "https://api.github.com";
@@ -338,10 +339,17 @@ export async function getCommitStreak() {
         (currentDate - prevDate) / (1000 * 60 * 60 * 24),
       );
 
-      if (diffDays === 1) {
+      // Mesma data (múltiplos commits) = ignore
+      if (diffDays === 0) {
+        continue;
+      }
+      // Dia consecutivo = soma ao streak
+      else if (diffDays === 1) {
         streak++;
         currentDate = prevDate;
-      } else if (diffDays > 1) {
+      }
+      // Gap no meio = quebra streak (para aqui)
+      else if (diffDays > 1) {
         break;
       }
     }
