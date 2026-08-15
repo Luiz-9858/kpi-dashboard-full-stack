@@ -1,6 +1,6 @@
 // components/KPICard.js
 // Componente para exibir um KPI individual com status visual
-//  - COM ANIMAÇÕES NATIVAS
+//  COM ANIMAÇÕES NATIVAS
 
 import { TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 
