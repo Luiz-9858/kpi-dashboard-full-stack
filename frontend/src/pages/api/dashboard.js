@@ -200,7 +200,7 @@ export default async function handler(req, res) {
 
     // Monta o objeto de resposta
     const responseData = {
-      // KPIs calculados (AGORA COM GITHUB!)
+      // KPIs calculados (AGORA COM GITHUB)
       kpis,
 
       // Dados brutos
