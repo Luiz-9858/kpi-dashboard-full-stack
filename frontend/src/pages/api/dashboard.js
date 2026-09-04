@@ -114,7 +114,7 @@ export default async function handler(req, res) {
 
     // Recalcula summary com os novos valores
     kpis.summary = {
-      total: 15,
+      total: 16,
       success: countByStatus(
         {
           ...kpis.productivity,
