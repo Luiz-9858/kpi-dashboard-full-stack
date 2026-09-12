@@ -29,12 +29,25 @@ import {
 } from "lucide-react";
 import { formatHours } from "@/lib/utils";
 
+// ✅ NOVO: Mapa fixo — cor sempre amarrada à categoria, nunca à posição no array
+const CATEGORY_COLORS = {
+  Estudos: "#3b82f6",
+  Idiomas: "#f59e0b",
+  "Desenvolvimento Pessoal": "#10b981",
+  Projetos: "#8b5cf6",
+};
+
+// ✅ NOVO: Remove qualquer emoji/símbolo do início do nome da categoria
+// Ex: "🔵 Estudos" -> "Estudos" | "🟣 Idiomas" -> "Idiomas"
+function stripEmoji(name) {
+  return name.replace(/^[^\p{L}\p{N}]+\s*/u, "").trim();
+}
+
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // ← ADICIONAR ESTA LINHA
   const { updateNotifications } = useNotifications();
 
   useEffect(() => {
@@ -54,7 +67,7 @@ export default function Dashboard() {
 
       if (result.success) {
         setData(result.data);
-        updateNotifications(result.data); // ← ADICIONAR ESTA LINHA
+        updateNotifications(result.data);
       } else {
         throw new Error(result.error || "Erro desconhecido");
       }
@@ -210,18 +223,27 @@ export default function Dashboard() {
     },
   ];
 
-  // Prepara dados para gráfico de pizza
-
-  // ✅ PREPARA DADOS PARA GRÁFICO DE PIZZA (ADICIONE AQUI!)
+  // ✅ Dados do gráfico de pizza
   const pieChartData = data.categoryBreakdown.map((cat) => ({
     name: cat.name,
     value: cat.real,
   }));
 
-  const barChartData = data.categoryBreakdown.map((cat) => ({
-    ...cat,
-    name: cat.name.replace("🟢 Desenvolvimento Pessoal", "🟢 Dev. Pessoal"),
-  }));
+  // ✅ NOVO: cor de cada fatia amarrada ao NOME da categoria, não à posição
+  const pieColors = pieChartData.map((item) => {
+    const key = stripEmoji(item.name);
+    return CATEGORY_COLORS[key] || "#94a3b8"; // cinza como fallback p/ categoria não mapeada
+  });
+
+  // Dados do gráfico de barras (mantive o encurtamento de nome, só deixei mais genérico)
+  const barChartData = data.categoryBreakdown.map((cat) => {
+    const key = stripEmoji(cat.name);
+    const shortName =
+      key === "Desenvolvimento Pessoal"
+        ? cat.name.replace(key, "Dev. Pessoal")
+        : cat.name;
+    return { ...cat, name: shortName };
+  });
 
   return (
     <>
@@ -241,7 +263,7 @@ export default function Dashboard() {
 
       <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
-          {/* Cabeçalho - ANIMAÇÃO */}
+          {/* Cabeçalho */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-down">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
@@ -261,7 +283,7 @@ export default function Dashboard() {
             </button>
           </div>
 
-          {/* Stats Cards - STAGGER */}
+          {/* Stats Cards */}
           <section>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 grid-stagger">
               {statsData.map((stat, index) => (
@@ -272,7 +294,7 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* KPIs Principais - STAGGER */}
+          {/* KPIs Principais */}
           <section>
             <div className="flex items-center justify-between mb-4 animate-fade-in-up delay-300">
               <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
@@ -294,7 +316,7 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* Card de Relatórios - NOVO! */}
+          {/* Card de Relatórios */}
           <section className="animate-fade-in-up delay-400">
             <a
               href="/relatorios"
@@ -354,7 +376,7 @@ export default function Dashboard() {
             </a>
           </section>
 
-          {/* Gráficos - CHART ENTRANCE */}
+          {/* Gráficos */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="chart-entrance">
               <BarChartComponent
@@ -377,7 +399,7 @@ export default function Dashboard() {
                 data={pieChartData}
                 dataKey="value"
                 nameKey="name"
-                colors={["#3b82f6", "#8b5cf6", "#f59e0b", "#10b981", "#ef4444"]}
+                colors={pieColors} // ✅ agora amarrado por categoria, não por posição
                 valueFormatter={(v) => `${Number(v).toFixed(1)}h`}
                 height={320}
                 showLabels={true}
@@ -385,7 +407,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Tasks de Hoje - FADE IN UP */}
+          {/* Tasks de Hoje */}
           <section className="card animate-fade-in-up delay-500">
             <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-4">
               Tasks de Hoje{" "}
@@ -448,7 +470,7 @@ export default function Dashboard() {
             )}
           </section>
 
-          {/* Progresso Semanal - FADE IN UP */}
+          {/* Progresso Semanal */}
           <section className="card animate-fade-in-up delay-700">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
               <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">
