@@ -470,6 +470,6 @@ test: Production testing & validation
 
 ---
 
-**Última atualização:** Janeiro 2026  
+**Última atualização:** Setembro 2026  
 **Versão:** 1.6.0  
 **Próxima:** v2.0 SAAS (Julho 2026)
