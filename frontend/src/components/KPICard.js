@@ -1,8 +1,7 @@
 // components/KPICard.js
 // Componente para exibir um KPI individual com status visual
 //  COM ANIMAÇÕES NATIVAS
-import { formatHours } from "@/lib/utils";
-
+import { formatHours } from "@/lib/utils.js";
 import { TrendingUp, TrendingDown, Minus, Target } from "lucide-react";
 
 export default function KPICard({ kpi }) {
