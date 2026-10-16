@@ -1,17 +1,17 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
 
-// Definir quais rotas precisam de autenticação
+// Definir quais rotas precisam de autenticação.
 export const config = {
   matcher: [
-    "/dashboard/:path*",
-    "/settings/:path*",
-    "/kpis/:path*",
-    "/github/:path*",
-    "/comparacao/:path*",
-    "/relatorios/:path*",
-    "/okrs/:path*",
-    "/projetos/:path*",
+    '/dashboard/:path*',
+    '/settings/:path*',
+    '/kpis/:path*',
+    '/github/:path*',
+    '/comparacao/:path*',
+    '/relatorios/:path*',
+    '/okrs/:path*',
+    '/projetos/:path*',
   ],
 };
 
@@ -28,7 +28,7 @@ export default withAuth(
     },
     // Redirecionar para login se não autenticado
     pages: {
-      signIn: "/auth/login",
+      signIn: '/auth/login',
     },
   },
 );
