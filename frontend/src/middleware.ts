@@ -1,7 +1,7 @@
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
-// Definir quais rotas precisam de autenticação.
+// Definir quais rotas precisam de autenticação
 export const config = {
   matcher: [
     '/dashboard/:path*',
